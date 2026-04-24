@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Website</title>
+    
+</head>
+<body>
+    <form method="POST">
+    {% csrf_token %}
+
+    <label>Check In:</label>
+    <input type="date" name="check_in">
+
+    <label>Check Out:</label>
+    <input type="date" name="check_out">
+
+    <label>Guests:</label>
+    <input type="number" name="guests">
+
+    <button type="submit">Confirm Booking</button>
+</form>
+    
+</body>
+</html>
