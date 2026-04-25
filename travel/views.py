@@ -54,13 +54,21 @@ def travels_page(request):
         return redirect('login/')   
     user_name = request.session.get('user_name')
 
+<<<<<<< HEAD
     return render(request, 'travels.html',{'user_name':user_name})
+=======
+    return render(request, 'travels.html', {'user_name': user_name})
+>>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
 
 
 
 def logout_user(request):
     request.session.flush()
+<<<<<<< HEAD
     return redirect('/')
+=======
+    return redirect('login')
+>>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
 
 
 
@@ -80,7 +88,12 @@ def search_method(request):
     return render(request, 'travels.html', {
     'results': results,
     'query': query,
+<<<<<<< HEAD
     'user_name':user_name})
+=======
+    'user_name' : user_name
+})
+>>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
 
 
 
@@ -97,10 +110,13 @@ def book_hotel(request, id):
     hotel = Hotel.objects.get(id=id)
 
     if request.method == "POST":
+<<<<<<< HEAD
         h_name= request.POST.get('h_name')
         h_email= request.POST.get('h_email')
         Address= request.POST.get('Address')
 
+=======
+>>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
         check_in = request.POST.get('check_in')
         check_out = request.POST.get('check_out')
         guests = int(request.POST.get('guests'))
@@ -121,9 +137,12 @@ def book_hotel(request, id):
         # 💾 Save booking
         Booking.objects.create(
             user_id=request.session.get('user_id'),
+<<<<<<< HEAD
             name=h_name,
             email=h_email,
             address=Address,
+=======
+>>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
             hotel=hotel,
             check_in=check_in,
             check_out=check_out,
@@ -138,4 +157,8 @@ def book_hotel(request, id):
 
         return redirect('travels')
 
+<<<<<<< HEAD
     return render(request, 'hotel.html', {'hotel': hotel})
+=======
+    return render(request, 'hotel.html', {'hotel': hotel})
+>>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b

@@ -107,9 +107,13 @@
                     <th>{{ i.hotel_name.ratings }}</th>
                     <th>{{ i.destination }}</th>
                     <th><img src = "{{ i.hotel_name.image.url }}" width ="100"></th>
+<<<<<<< HEAD
                 
                     <th><a href="{% url 'hotel_book' i.hotel_name.id %}">Book Now</a></th>
         
+=======
+                    <th><a href="{% url 'hotel_book' i.hotel_name.id %}">Book Now</a></th>
+>>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
                 </tr>
             </tbody>
         {% endfor %}
