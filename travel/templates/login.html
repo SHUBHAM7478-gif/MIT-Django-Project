@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Login Form</title>
+</head>
+<body>
+
+<h2>User Login Form</h2>
+<p>{{ error }}
+</p>
+<form action="{% url 'login' %}"method="POST">
+
+    {% csrf_token %}
+
+    <label for="username">Username:</label><br>
+    <input type="text" name="user_name"><br><br>
+
+    <label for="password">Password:</label><br>
+    <input type="password" name="user_password"><br><br>
+
+    <input type="submit" value="Login">
+</form>
+<p> if don't have account, <a href="{% url 'register' %}">Sign Up</a></p>
+
+</body>
+</html>
