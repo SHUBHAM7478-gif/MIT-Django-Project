@@ -53,6 +53,7 @@
                     <th scope="col">HOTEL</th>
                     <th scope="col">PLACE</th>
                     <th scope="col">IMAGES</th>
+                    <th scope="col">ACTION</th>
                 </tr>
             </thead>
         {% for i in results %}
@@ -66,6 +67,7 @@
                     <th>{{ i.hotel_name }}</th>
                     <th>{{ i.destination }}</th>
                     <th><img src = "{{ i.image.url }}" width ="100"></th>
+                    <th><a href="{% url 'package_book' i.id %}">Book Now</a></th>
                 </tr>
             </tbody>
         {% endfor %}
