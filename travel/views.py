@@ -58,15 +58,17 @@ def user_login(request):
 def travels_page(request):
     user_name = request.session.get('user_name')  # can be None
 
-    return render(request, 'travels.html', {
-        'user_name': user_name
-    })
+    return render(request, 'travels.html', {'user_name': user_name})
 
 
 
 def logout_user(request):
     request.session.flush()
+<<<<<<< HEAD
+    return redirect('/')
+=======
     return redirect('login')
+>>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
 
 
 
@@ -81,10 +83,10 @@ def search_method(request):
         )
 
     return render(request, 'travels.html', {
-        'results': results,
-        'query': query,
-        'user_name': user_name
-    })
+    'results': results,
+    'query': query,
+    'user_name' : user_name
+})
 
 
 
@@ -101,6 +103,13 @@ def book_hotel(request, id):
     hotel = Hotel.objects.get(id=id)
 
     if request.method == "POST":
+<<<<<<< HEAD
+        h_name= request.POST.get('h_name')
+        h_email= request.POST.get('h_email')
+        Address= request.POST.get('Address')
+
+=======
+>>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
         check_in = request.POST.get('check_in')
         check_out = request.POST.get('check_out')
         guests = int(request.POST.get('guests'))
@@ -121,6 +130,12 @@ def book_hotel(request, id):
        
         Booking.objects.create(
             user_id=request.session.get('user_id'),
+<<<<<<< HEAD
+            name=h_name,
+            email=h_email,
+            address=Address,
+=======
+>>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
             hotel=hotel,
             check_in=check_in,
             check_out=check_out,
@@ -135,47 +150,7 @@ def book_hotel(request, id):
 
         return redirect('travels')
 
+<<<<<<< HEAD
     return render(request, 'hotel.html', {'hotel': hotel})
-
-
-
-
-
-
-
-from django.shortcuts import get_object_or_404
-from django.urls import reverse
-
-def book_package(request, id):
-    if not request.session.get('user_id'):
-        return redirect(f"{reverse('login')}?next={reverse('package_book', args=[id])}")
-
-    package = get_object_or_404(Package, id=id)
-
-    if request.method == "POST":
-        check_in = request.POST.get('check_in')
-        check_out = request.POST.get('check_out')
-        guests = int(request.POST.get('guests'))
-
-
-        check_in_date = datetime.strptime(check_in, "%Y-%m-%d")
-        check_out_date = datetime.strptime(check_out, "%Y-%m-%d")
-        
-        total_price = package.package_price * guests
-
-       
-        hotel = package.hotel_name
-
-        Booking.objects.create(
-            user_id=request.session.get('user_id'),
-            check_in=check_in,
-            check_out=check_out,
-            package=package,
-            hotel=hotel,
-            guests=guests,
-            total_price=total_price,
-        )
-
-        return redirect('travels')
-
-    return render(request, 'package.html', {'package': package})
+=======
+    return render(request, 'hotel.html', {'hotel': hotel})

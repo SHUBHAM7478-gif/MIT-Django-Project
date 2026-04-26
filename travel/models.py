@@ -39,6 +39,9 @@ class Hotel(models.Model):
     room_availability = models.IntegerField()
     image = models.ImageField(upload_to='hotel_image/')
 
+    populer_hotel=models.BooleanField(default=False)
+
+
 
     def __str__(self):
         return self.hotel_name
@@ -57,6 +60,7 @@ class Package(models.Model):
     duration_days = models.IntegerField()
 
     image = models.ImageField(upload_to='package_image/')
+    populer_tour=models.BooleanField(default=False)
 
 
     def __str__(self):
@@ -72,6 +76,11 @@ class Booking(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
 
     package = models.ForeignKey(Package, on_delete=models.CASCADE, null=True, blank=True)
+
+    name = models.CharField(max_length=100, default="Unknown")
+    email = models.EmailField(null=True, blank=True)
+    address = models.CharField(max_length=255, null=True, blank=True)
+
 
     check_in = models.DateField(null=True, blank=True)
     check_out = models.DateField()
