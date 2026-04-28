@@ -1,26 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website</title>
-    
-</head>
-<body>
-    <form method="POST">
-    {% csrf_token %}
+{% extends "bootstrap.html" %}
 
-    <label>Check In:</label>
-    <input type="date" name="check_in" required>
+{% block content %}
 
-    <label>Check Out:</label>
-    <input type="date" name="check_out" required>
+<div class="row justify-content-center">
+    <div class="col-md-6">
 
-    <label>Guests:</label>
-    <input type="number" name="guests" required min="1">
+        <div class="card shadow p-4">
 
-    <button type="submit">Confirm Booking</button>
-</form>
-    
-</body>
-</html>
+            <form method="POST">
+                {% csrf_token %}
+
+                <input type="text" name="name" class="form-control mb-3" placeholder="Name">
+                <input type="email" name="email" class="form-control mb-3" placeholder="Email">
+                <input type="text" name="address" class="form-control mb-3" placeholder="Address">
+
+                <input type="date" name="check_in" class="form-control mb-3" placeholder="TOUR AT">
+                <input type="date" name="check_out" class="form-control mb-3" placeholder="TOUR OUT">
+
+                <input type="number" name="guests" class="form-control mb-3" placeholder="Guests">
+
+                <button class="btn btn-primary w-100">Confirm Booking</button>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

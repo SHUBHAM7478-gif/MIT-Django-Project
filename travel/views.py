@@ -5,13 +5,17 @@ from django.contrib.auth.hashers import make_password, check_password
 from datetime import datetime
 
 def landing(request):
+    if request.session.get('user_id'):
+        return redirect('travels')   
     return render(request,"travels.html")
+
+
 
 # for user registration
 
 def user_registration(request):
     if request.method == 'POST':
-        user_name = request.POST.get('user_name')
+        user_name = request.POST.get('user_name')   
         user_email = request.POST.get('user_email')
         user_password = make_password(request.POST.get('user_password'))
 
@@ -56,38 +60,38 @@ def user_login(request):
 
 
 def travels_page(request):
-    user_name = request.session.get('user_name')  # can be None
+    user_name = request.session.get('user_name')
 
-    return render(request, 'travels.html', {'user_name': user_name})
+    return render(request, 'travels.html', {
+        'user_name': user_name
+    })
 
 
 
 def logout_user(request):
     request.session.flush()
-<<<<<<< HEAD
     return redirect('/')
-=======
-    return redirect('login')
->>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
 
 
 
 def search_method(request):
-    user_name = request.session.get('user_name')  # optional
+    user_name = request.session.get('user_name')
+
     query = request.GET.get('search')
-    results = []
+
+    packages = []
+    hotels = []
 
     if query:
-        results = Package.objects.filter(
-            destination__name__icontains=query
-        )
+        packages = Package.objects.filter(destination__name__icontains=query)
+        hotels = Hotel.objects.filter(destination__name__icontains=query)
 
     return render(request, 'travels.html', {
-    'results': results,
-    'query': query,
-    'user_name' : user_name
-})
-
+        'packages': packages,
+        'hotels': hotels,
+        'query': query,
+        'user_name': user_name
+    })
 
 
 
@@ -103,16 +107,13 @@ def book_hotel(request, id):
     hotel = Hotel.objects.get(id=id)
 
     if request.method == "POST":
-<<<<<<< HEAD
         h_name= request.POST.get('h_name')
         h_email= request.POST.get('h_email')
         Address= request.POST.get('Address')
 
-=======
->>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
         check_in = request.POST.get('check_in')
         check_out = request.POST.get('check_out')
-        guests = int(request.POST.get('guests'))
+        guests = int(request.POST.get('guests') or 1)
 
         # Convert to date
         check_in_date = datetime.strptime(check_in, "%Y-%m-%d")
@@ -130,12 +131,9 @@ def book_hotel(request, id):
        
         Booking.objects.create(
             user_id=request.session.get('user_id'),
-<<<<<<< HEAD
             name=h_name,
             email=h_email,
             address=Address,
-=======
->>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
             hotel=hotel,
             check_in=check_in,
             check_out=check_out,
@@ -150,7 +148,61 @@ def book_hotel(request, id):
 
         return redirect('travels')
 
-<<<<<<< HEAD
     return render(request, 'hotel.html', {'hotel': hotel})
-=======
-    return render(request, 'hotel.html', {'hotel': hotel})
+
+
+
+
+
+def package_booking(request, id):
+
+    if not request.session.get('user_id'):
+        return redirect(f'/login/?next=/package-book/{id}/')
+
+    package = Package.objects.get(id=id)
+    user_id = request.session.get('user_id')
+
+    if request.method == "POST":
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        address = request.POST.get('address')
+        check_in = request.POST.get('check_in')
+        check_out = request.POST.get('check_out')
+        guests = int(request.POST.get('guests') or 1)
+
+        total_price = guests * package.package_price
+
+        Booking.objects.create(
+            user_id=user_id,              
+            package=package,
+            hotel=package.hotel_name,     
+            name=name,
+            email=email,
+            address=address,
+            check_in=check_in if check_in else None,
+            check_out=check_out if check_out else None,
+            guests=guests,
+            total_price=total_price
+        )
+
+        return redirect('travels')
+
+    return render(request, 'package.html', {'package': package})
+
+
+
+
+# booking history
+def booking_history(request):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect('login')
+    
+
+    bookings = Booking.objects.filter(user_id=user_id).order_by('-booking_at')
+
+    return render(request, 'booking_history.html', {
+        'bookings': bookings,
+        'user_name': request.session.get('user_name')
+    })

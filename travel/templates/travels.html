@@ -1,132 +1,122 @@
-<!DOCTYPE html>
-<html>
-<head>
- <title>Travel and Tourism</title>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+{% extends "bootstrap.html" %}
 
-    <style>
-        body{
-            background-color: antiquewhite;
-        }
-    </style>
-</head>
-<body>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    {% include "header.html" %}
+{% block content %}
 
-    <h3> Welcome {{user_name}} to  TRIP TRAVELS </h3>
-
-
-    <br>
-
-    <section class="banner">
-        <div class="slider">
-            <img src="img/banner1.jpg" alt="Banner 1">
-            <img src="img/banner2.jpg" alt="Banner 2">
-            <img src="img/banner3.jpg" alt="Banner 3">
-        </div>
-    </section>
-    <br>
-    
-        
-        <div class="search">
-            <form action="{% url 'search' %}" method = "GET">
-                {% csrf_token %}
-                <input type="text" placeholder="Search.." name="search">
-                <button type="submit"><i class="fa fa-search">search</i></button>
-            </form>
-        </div>
-
-    
-    {% if results %}
-    <h2>Packages</h2>
-        <table border = "1" class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">PACKAGE NAME</th>
-                    <th scope="col">DESCRIPTION</th>
-                    <th scope="col">PRICE</th>
-                    <th scope="col">DURATION</th>
-                    <th scope="col">HOTEL</th>
-                    <th scope="col">PLACE</th>
-                    <th scope="col">IMAGES</th>
-                    <th scope="col">ACTION</th>
-                </tr>
-            </thead>
-        {% for i in results %}
-            <tbody>
-                <tr>
-                    <th>{{ forloop.counter }}</th>
-                    <th>{{ i.package_name }}</th>
-                    <th>{{ i.package_description }}</th>
-                    <th>{{ i.package_price }}</th>
-                    <th>{{ i.duration_days }}</th>
-                    <th>{{ i.hotel_name }}</th>
-                    <th>{{ i.destination }}</th>
-                    <th><img src = "{{ i.image.url }}" width ="100"></th>
-                    <th><a href="{% url 'package_book' i.id %}">Book Now</a></th>
-                </tr>
-            </tbody>
-        {% endfor %}
-        </table>
-        {% elif query %}
-            <p> No Data Found! </p>
-
+<!-- Welcome -->
+<div class="mb-4">
+    {% if user_name %}
+        <h3 class="fw-bold">Welcome {{ user_name }}</h3>
+    {% else %}
+        <h3 class="fw-bold">Welcome Guest</h3>
     {% endif %}
+</div>
+
+<!-- Search -->
+<div class="card shadow-sm p-3 mb-4">
+    <form action="{% url 'search' %}" method="GET" class="d-flex">
+        <input type="text" name="search" class="form-control me-2" placeholder="Search destination...">
+        <button class="btn btn-primary">Search</button>
+    </form>
+</div>
 
 
+<!--  PACKAGES  -->
+{% if packages %}
+<h4 class="mb-3">🌍 Packages</h4>
+
+<div class="row">
+    {% for p in packages %}
+    <div class="col-md-4 mb-4">
+
+        <div class="card shadow-sm h-100">
+
+            <img src="{{ p.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+
+            <div class="card-body">
+
+                <h5 class="card-title">{{ p.package_name }}</h5>
+
+                <p class="text-muted small">
+                    {{ p.destination.name }} • {{ p.duration_days }} days
+                </p>
+
+                <p>{{ p.package_description|truncatewords:10 }}</p>
+
+                <p class="fw-bold text-success">
+                    ₹{{ p.package_price }}
+                </p>
+
+                <p class="small text-muted">
+                    Hotel: {{ p.hotel_name.hotel_name }}
+                </p>
+
+                <a href="{% url 'package_book' p.id %}" 
+                   class="btn btn-success w-100">
+                   Book Package
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
 
+{% if hotels %}
+<h4 class="mb-3 mt-4">🏨 Hotels</h4>
 
+<div class="row">
+    {% for h in hotels %}
+    <div class="col-md-4 mb-4">
 
-    {% if results %}
-    <h2>Hotels For you</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">HOTEL NAME</th>
-                    <th scope="col">ADDRESS</th>
-                    <th scope="col">PRICE</th>
-                    <th scope="col">ROOM</th>
-                    <th scope="col">RATINGS</th>
-                    <th scope="col">PLACE</th>
-                    <th scope="col">IMAGES</th>
-                    <th scope="col">ACTION</th>
-                </tr>
-            </thead>
-        {% for i in results %}
-            <tbody>
-                <tr>
-                    <th>{{ forloop.counter }}</th>
-                    <th>{{ i.hotel_name}}</th>
-                    <th>{{ i.hotel_name.hotel_address}}</th>
-                    <th>{{ i.hotel_name.price_per_night }}</th>
-                    <th>{{ i.hotel_name.room_availability }}</th>
-                    <th>{{ i.hotel_name.ratings }}</th>
-                    <th>{{ i.destination }}</th>
-                    <th><img src = "{{ i.hotel_name.image.url }}" width ="100"></th>
-<<<<<<< HEAD
-                
-                    <th><a href="{% url 'hotel_book' i.hotel_name.id %}">Book Now</a></th>
-        
-=======
-                    <th><a href="{% url 'hotel_book' i.hotel_name.id %}">Book Now</a></th>
->>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
-                </tr>
-            </tbody>
-        {% endfor %}
-        </table>
-        {% elif query %}
-            <p> No Data Found! </p>
+        <div class="card shadow-sm h-100">
 
-    {% endif %}
-</body>
+            <img src="{{ h.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
 
-    
-    
-</body>
-</html>
+            <div class="card-body">
+
+                <h5 class="card-title">{{ h.hotel_name }}</h5>
+
+                <p class="text-muted small">
+                    {{ h.destination.name }}
+                </p>
+
+                <p class="small">
+                    {{ h.hotel_address|truncatewords:10 }}
+                </p>
+
+                <p>
+                    ⭐ {{ h.ratings }}
+                </p>
+
+                <p class="fw-bold text-success">
+                    ₹{{ h.price_per_night }} / night
+                </p>
+
+                <p class="small text-muted">
+                    Rooms: {{ h.room_availability }}
+                </p>
+
+                <a href="{% url 'hotel_book' h.id %}" 
+                   class="btn btn-primary w-100">
+                   Book Hotel
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- NO RESULT -->
+{% if query and not packages and not hotels %}
+<div class="alert alert-warning text-center mt-4">
+    No results found for "{{ query }}"
+</div>
+{% endif %}
+
+{% endblock %}

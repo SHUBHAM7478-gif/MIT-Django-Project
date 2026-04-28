@@ -26,18 +26,15 @@ urlpatterns = [
     path('',views.landing),
     path('register/', views.user_registration, name='register'),
     path('login/', views.user_login, name='login'),
-<<<<<<< HEAD
-    path('travel/', views.travels_page, name='travels'),
-=======
     path('travels/', views.travels_page, name='travels'),
->>>>>>> 7cf86b372cb30cc0d0cebaf6dde2face7e58fd3b
     path('search/', views.search_method, name='search'),
     path('logout/', views.logout_user, name='logout'),
 
 
 
-    path('package-book/<int:id>/', views.book_package, name='package_book'),
-    path('hotel-book/<int:id>/', views.book_hotel, name='hotel_book')
+    path('package-book/<int:id>/', views.package_booking, name='package_book'),
+    path('hotel-book/<int:id>/', views.book_hotel, name='hotel_book'),
+    path('my-bookings/', views.booking_history, name='my_bookings')
 ]
 
 
