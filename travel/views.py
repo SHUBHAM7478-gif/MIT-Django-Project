@@ -187,7 +187,7 @@ def package_booking(request, id):
 
         return redirect('travels')
 
-    return render(request, 'package.html', {'package': package})
+    return render(request, 'package.html', {'package': package, 'user_name': request.session.get('user_name')})
 
 
 
