@@ -192,7 +192,7 @@ def package_booking(request, id):
 
 
 
-# booking history
+# booking history views functions
 def booking_history(request):
     user_id = request.session.get('user_id')
 
