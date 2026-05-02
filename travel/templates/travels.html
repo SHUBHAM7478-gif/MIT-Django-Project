@@ -19,6 +19,13 @@
     </form>
 </div>
 
+<h3 class="text-center mb-4">
+    {% if query %}
+      Search Results
+    {% else %}
+      Popular Plan
+    {% endif %}
+  </h3>
 
 <!--  PACKAGES  -->
 {% if packages %}

@@ -30,6 +30,8 @@
                             <th>Check-Out</th>
                             <th>Guests</th>
                             <th>Total Price</th>
+                            <th>Remove PACKAGES Or Hotel</th>
+
                             
                         </tr>
                     </thead>
@@ -68,7 +70,7 @@
                             <td class="fw-bold text-success">
                                 ₹{{ b.total_price }}
                             </td>
-
+                            <td><a href="/my-bookings/delete/{{ b.id }}">Delete</a></td>
                             
 
                         </tr>

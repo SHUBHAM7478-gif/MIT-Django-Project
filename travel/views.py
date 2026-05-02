@@ -1,13 +1,19 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from .models import *
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
 from datetime import datetime
 
 def landing(request):
-    if request.session.get('user_id'):
-        return redirect('travels')   
-    return render(request,"travels.html")
+    result = Package.objects.filter(populer_tour=True)[:3]
+    h = Hotel.objects.filter(populer_hotel=True)[:3]
+
+    return render(request, "travels.html", {
+        "packages": result,
+        "hotels": h,
+        "query": None
+    })
+
 
 
 
@@ -58,12 +64,16 @@ def user_login(request):
 
 
 
-
 def travels_page(request):
     user_name = request.session.get('user_name')
-
+    result = Package.objects.filter(populer_tour=True)[:3]
+    h = Hotel.objects.filter(populer_hotel=True)[:3]
     return render(request, 'travels.html', {
-        'user_name': user_name
+        'user_name': user_name,
+        "packages": result,
+        "hotels": h,
+        "query": None
+
     })
 
 
@@ -99,59 +109,49 @@ def search_method(request):
 
 # hotel booking function
 
-
 def book_hotel(request, id):
-    if not request.session.get('user_id'):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
         return redirect(f'/login/?next=/hotel-book/{id}/')
 
-    hotel = Hotel.objects.get(id=id)
+    hotel = get_object_or_404(Hotel, id=id)
 
     if request.method == "POST":
-        h_name= request.POST.get('h_name')
-        h_email= request.POST.get('h_email')
-        Address= request.POST.get('Address')
+        h_name = request.POST.get('h_name')
+        h_email = request.POST.get('h_email')
+        address = request.POST.get('Address')
 
         check_in = request.POST.get('check_in')
         check_out = request.POST.get('check_out')
         guests = int(request.POST.get('guests') or 1)
 
-        # Convert to date
         check_in_date = datetime.strptime(check_in, "%Y-%m-%d")
         check_out_date = datetime.strptime(check_out, "%Y-%m-%d")
 
         days = (check_out_date - check_in_date).days
 
-        
-        total_price = days * hotel.price_per_night
+        total_price = (days * hotel.price_per_night)*guests
 
-        
-        if hotel.room_availability <= 0:
-            return HttpResponse("No rooms available")
-
-       
         Booking.objects.create(
-            user_id=request.session.get('user_id'),
+            user_id=user_id,
             name=h_name,
             email=h_email,
-            address=Address,
+            address=address,
             hotel=hotel,
             check_in=check_in,
             check_out=check_out,
             guests=guests,
             total_price=total_price,
-             package=None,
+            package=None,
         )
 
-        
         hotel.room_availability -= 1
         hotel.save()
 
-        return redirect('travels')
+        return redirect('/my-bookings')
 
-    return render(request, 'hotel.html', {'hotel': hotel})
-
-
-
+    return render(request, 'hotel.html', {'hotel': hotel,'user_name': request.session.get('user_name')})
 
 
 def package_booking(request, id):
@@ -185,14 +185,14 @@ def package_booking(request, id):
             total_price=total_price
         )
 
-        return redirect('travels')
+        return redirect('/my-bookings')
 
     return render(request, 'package.html', {'package': package, 'user_name': request.session.get('user_name')})
 
 
 
 
-# booking history views functions
+# booking history
 def booking_history(request):
     user_id = request.session.get('user_id')
 
@@ -206,3 +206,8 @@ def booking_history(request):
         'bookings': bookings,
         'user_name': request.session.get('user_name')
     })
+
+def delete(request,id):
+    p=get_object_or_404(Booking,id=id)
+    p.delete()
+    return redirect('/my-bookings/')
