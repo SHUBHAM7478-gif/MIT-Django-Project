@@ -58,9 +58,13 @@
                 </p>
 
                 <a href="{% url 'package_book' p.id %}" 
-                   class="btn btn-success w-100">
+                   class="btn btn-success w-40">
                    Book Package
                 </a>
+                <a href="{% url 'package_details' p.id %}"
+              class="btn btn-secondary w-40">
+             View Details
+             </a>
 
             </div>
         </div>
@@ -106,11 +110,15 @@
                     Rooms: {{ h.room_availability }}
                 </p>
 
-                <a href="{% url 'hotel_book' h.id %}" 
-                   class="btn btn-primary w-100">
-                   Book Hotel
+               <a href="{% url 'hotel_book' h.id %}" 
+                 class="btn btn-primary w-50">
+                  Book Hotel
                 </a>
 
+            <a href="{% url 'hotel_details' h.id %}"
+              class="btn btn-secondary w-40">
+             View Details
+             </a>
             </div>
         </div>
 

@@ -1,24 +1,130 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3">
-  <a class="navbar-brand fw-bold" href="/">Trip Travels</a>
+<!-- Bootstrap 5 Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-3">
+  <div class="container">
 
-  <div class="collapse navbar-collapse">
-    <ul class="navbar-nav me-auto">
-      <li class="nav-item"><a class="nav-link" href="{% url 'travels' %}">Home</a></li>
-      <li class="nav-item"><a class="nav-link" href="{% url 'my_bookings' %}">My Bookings</a></li>
-    </ul>
+    <!-- Logo -->
+    <a class="navbar-brand fw-bold fs-3 text-warning" href="/">
+      ✈ Trip Travels
+    </a>
 
-    <ul class="navbar-nav">
-      {% if user_name %}
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler border-0 shadow-none" type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar Content -->
+    <div class="collapse navbar-collapse" id="navbarContent">
+
+      <!-- Left Menu -->
+      <ul class="navbar-nav mx-auto gap-lg-3 text-center">
         <li class="nav-item">
-            <span class="nav-link text-white">Hi, {{ user_name }}</span>
+          <a class="nav-link active fw-semibold" href="{% url 'travels' %}">
+            Home
+          </a>
         </li>
+
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+          <a class="nav-link fw-semibold" href="{% url 'my_bookings' %}">
+            My Bookings
+          </a>
         </li>
-      {% else %}
-        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
-      {% endif %}
-    </ul>
+
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" href="#">
+            Packages
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" href="#">
+            Hotels
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" href="#">
+            Contact
+          </a>
+        </li>
+      </ul>
+
+      <!-- Right Side -->
+      <ul class="navbar-nav align-items-center gap-2">
+
+        {% if user_name %}
+
+          <li class="nav-item">
+            <span class="nav-link text-light fw-semibold">
+              👋 Hi, {{ user_name }}
+            </span>
+          </li>
+
+          <li class="nav-item">
+            <a class="btn btn-warning px-4 rounded-pill fw-semibold"
+               href="{% url 'logout' %}">
+              Logout
+            </a>
+          </li>
+
+        {% else %}
+
+          <li class="nav-item">
+            <a class="btn btn-outline-light rounded-pill px-4"
+               href="{% url 'login' %}">
+              Login
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="btn btn-warning rounded-pill px-4 fw-semibold"
+               href="{% url 'register' %}">
+              Register
+            </a>
+          </li>
+
+        {% endif %}
+
+      </ul>
+
+    </div>
   </div>
 </nav>
+
+<!-- Extra CSS -->
+<style>
+  .navbar {
+    transition: 0.3s;
+  }
+
+  .nav-link {
+    color: #fff !important;
+    transition: 0.3s;
+    position: relative;
+  }
+
+  .nav-link:hover {
+    color: #ffc107 !important;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0%;
+    height: 2px;
+    background: #ffc107;
+    transition: 0.3s;
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+  }
+
+  .btn-warning:hover {
+    transform: translateY(-2px);
+    transition: 0.3s;
+  }
+</style>

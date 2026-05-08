@@ -89,3 +89,17 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.user.user_name} booking"
+
+class PackageImage(models.Model):
+    package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='package_images/')
+
+    def __str__(self):
+        return self.package.package_name
+    
+class HotelImage(models.Model):
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='hotel_images/')
+
+    def __str__(self):
+        return self.hotel.hotel_name

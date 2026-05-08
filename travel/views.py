@@ -211,3 +211,31 @@ def delete(request,id):
     p=get_object_or_404(Booking,id=id)
     p.delete()
     return redirect('/my-bookings/')
+
+
+def package_details(request, id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect(f'/login/?next=/package/{id}/')
+
+    package = get_object_or_404(Package, id=id)
+    # desciption = get_object_or_404(Destination, id=id)
+
+    return render(request, 'viewdetails.html', {
+        'package': package,
+         'd':package.destination.description,
+        'user_name': request.session.get('user_name')
+    })
+def hotel_details(request, id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect(f'/login/?next=/hotel/{id}/')
+
+    hotel = get_object_or_404(Hotel, id=id)
+
+    return render(request, 'viewdetails.html', {
+        'hotel': hotel,
+        'user_name': request.session.get('user_name')
+    })
