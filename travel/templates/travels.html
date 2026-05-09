@@ -1,7 +1,7 @@
 {% extends "bootstrap.html" %}
 
 {% block content %}
-
+{% load static %}
 <!-- Welcome -->
 <div class="mb-4">
     {% if user_name %}
@@ -12,13 +12,15 @@
 </div>
 
 <!-- Search -->
-<div class="card shadow-sm p-3 mb-4">
-    <form action="{% url 'search' %}" method="GET" class="d-flex">
-        <input type="text" name="search" class="form-control me-2" placeholder="Search destination...">
-        <button class="btn btn-primary">Search</button>
-    </form>
-</div>
 
+                
+                            <div class="card shadow-sm p-3 mb-4">
+                               <form action="{% url 'search' %}" method="GET" class="d-flex">
+                                <input type="text" name="search" class="form-control me-2" placeholder="Search destination...">
+                                <button class="btn btn-primary">Search</button>
+                               </form>
+                            </div>
+                      
 <h3 class="text-center mb-4">
     {% if query %}
       Search Results
@@ -133,5 +135,346 @@
     No results found for "{{ query }}"
 </div>
 {% endif %}
+<section class="ftco-section services-section py-5 bg-light">
+	<div class="container">
+		<div class="row align-items-center">
 
+			<!-- Left Content -->
+			<div class="col-lg-5 mb-5 mb-lg-0 ftco-animate">
+				<div class="pe-lg-5">
+					<span class="text-primary fw-bold text-uppercase">
+						Welcome to Trips Travels
+					</span>
+
+					<h2 class="mt-3 mb-4 fw-bold display-5">
+						It's Time To Start Your Adventure
+					</h2>
+
+					<p class="text-muted fs-6">
+						Discover amazing destinations, unforgettable experiences,
+						and premium travel services designed for every traveler.
+					</p>
+
+					<p class="text-muted">
+						From breathtaking mountains to relaxing beaches,
+						our expert team helps you create memories that last forever.
+					</p>
+
+					<a href="#" class="btn btn-primary px-4 py-3 rounded-pill shadow-sm mt-3">
+						Search Destination
+					</a>
+				</div>
+			</div>
+
+			<!-- Right Cards -->
+			<div class="col-lg-7">
+				<div class="row g-4">
+
+					<!-- Card 1 -->
+					<div class="col-md-6 ftco-animate">
+						<div class="service-card position-relative overflow-hidden rounded-4 shadow">
+							<img src="{% static 'images/services-1.jpg' %}" class="img-fluid w-100 service-img">
+
+							<div class="service-overlay p-4">
+								<div class="icon-box mb-3">
+									<span class="flaticon-paragliding"></span>
+								</div>
+
+								<h4 class="fw-bold"style="color: #ff8800;">Activities</h4>
+
+								<p>
+									Enjoy exciting adventures and outdoor activities.
+								</p>
+							</div>
+						</div>
+					</div>
+
+					<!-- Card 2 -->
+					<div class="col-md-6 ftco-animate">
+						<div class="service-card position-relative overflow-hidden rounded-4 shadow">
+							<img src="{% static 'images/services-2.jpg' %}" class="img-fluid w-100 service-img">
+
+							<div class="service-overlay p-4 ">
+								<div class="icon-box mb-3">
+									<span class="flaticon-route"></span>
+								</div>
+
+								<h4 class="fw-bold" style="color: #ff8800;">Travel Plans</h4>
+
+								<p>
+									Complete travel arrangements with comfort and safety.
+								</p>
+							</div>
+						</div>
+					</div>
+
+					<!-- Card 3 -->
+					<div class="col-md-6 ftco-animate">
+						<div class="service-card position-relative overflow-hidden rounded-4 shadow">
+							<img src="{% static 'images/services-3.jpg' %}" class="img-fluid w-100 service-img">
+
+							<div class="service-overlay p-4 ">
+								<div class="icon-box mb-3">
+									<span class="flaticon-tour-guide"></span>
+								</div>
+
+								<h4 class="fw-bold" style="color: #ff8800;">Private Guide</h4>
+
+								<p>
+									Professional guides for your unforgettable journey.
+								</p>
+							</div>
+						</div>
+					</div>
+
+					<!-- Card 4 -->
+					<div class="col-md-6 ftco-animate">
+						<div class="service-card position-relative overflow-hidden rounded-4 shadow">
+							<img src="{% static 'images/services-4.jpg' %}" class="img-fluid w-100 service-img">
+
+							<div class="service-overlay p-4">
+								<div class="icon-box mb-3">
+									<span class="flaticon-map"></span>
+								</div>
+
+								<h4 class="fw-bold" style="color: #ff8800;">Location Manager</h4>
+
+								<p>
+									Find the best destinations and hidden travel gems.
+								</p>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+	</div>
+</section>
+{% endblock %}
+{% block footer %}
+<section class="testimonial-section"
+style="background-image:url('{% static "images/bg_1.jpg" %}');">
+
+    <div class="container">
+
+        <!-- HEADING -->
+        <div class="row justify-content-center mb-5">
+
+            <div class="col-lg-7 text-center">
+
+                <span class="testimonial-subtitle">
+                    Testimonial
+                </span>
+
+                <h2 class="testimonial-title">
+                    Tourist Feedback
+                </h2>
+
+                <p class="testimonial-desc">
+                    Real experiences from our happy travelers around the world.
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- CARDS -->
+        <div class="row g-4">
+
+            <!-- CARD 1 -->
+            <div class="col-lg-4 col-md-6">
+
+                <div class="testimonial-card">
+
+                    <div class="quote-icon">
+                        <span class="fa fa-quote-left"></span>
+                    </div>
+
+                    <div class="stars">
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                    </div>
+
+                    <p class="testimonial-text">
+                        Amazing travel experience with excellent service,
+                        luxury hotels, and unforgettable memories.
+                    </p>
+
+                    <div class="client-info">
+
+                        <div class="client-img"
+                        style="background-image:url('{% static "images/shuchana.jpeg" %}');">
+                        </div>
+
+                        <div class="client-details">
+                            <h5>Suchana Ghosh</h5>
+                            <span>Full Stack Developer</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- CARD 2 -->
+            <div class="col-lg-4 col-md-6">
+
+                <div class="testimonial-card">
+
+                    <div class="quote-icon">
+                        <span class="fa fa-quote-left"></span>
+                    </div>
+
+                    <div class="stars">
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                    </div>
+
+                    <p class="testimonial-text">
+                        The trip was perfectly organized and the destinations
+                        were absolutely breathtaking.
+                    </p>
+
+                    <div class="client-info">
+
+                        <div class="client-img"
+                        style="background-image:url('{% static "images/smriti.jpeg" %}');">
+                        </div>
+
+                        <div class="client-details">
+                            <h5>Smriti Raksit</h5>
+                            <span>Software Developer</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- CARD 3 -->
+            <div class="col-lg-4 col-md-6">
+
+                <div class="testimonial-card">
+
+                    <div class="quote-icon">
+                        <span class="fa fa-quote-left"></span>
+                    </div>
+
+                    <div class="stars">
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                    </div>
+
+                    <p class="testimonial-text">
+                        Friendly guides, safe journey, and premium facilities
+                        throughout the entire tour.
+                    </p>
+
+                    <div class="client-info">
+
+                        <div class="client-img"
+                        style="background-image:url('{% static "images/gopi.jpeg" %}');">
+                        </div>
+
+                        <div class="client-details">
+                            <h5>Gopinath Dey</h5>
+                            <span>Marketing Manager</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<footer class="travel-footer"
+style="background-image:url('{% static "images/bg_3.jpg" %}');">
+
+    <div class="footer-overlay"></div>
+
+    <div class="container">
+
+        <div class="row footer-top">
+
+            <!-- ABOUT -->
+            <div class="col-md-3">
+                <h3>About</h3>
+                <p>
+                    Explore the world with comfort and style.
+                    We provide the best travel experiences for you.
+                </p>
+
+                <div class="social-icons">
+                    <a href="#"><i class="fa fa-twitter"></i></a>
+                    <a href="#"><i class="fa fa-facebook"></i></a>
+                    <a href="#"><i class="fa fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <!-- INFO -->
+            <div class="col-md-3">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="#">Online Enquiry</a></li>
+                    <li><a href="#">Booking Conditions</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Refund Policy</a></li>
+                    <li><a href="#">Call Us</a></li>
+                </ul>
+            </div>
+
+            <!-- EXPERIENCE -->
+            <div class="col-md-3">
+                <h3>Experience</h3>
+                <ul>
+                    <li><a href="#">Adventure</a></li>
+                    <li><a href="#">Hotels</a></li>
+                    <li><a href="#">Beach</a></li>
+                    <li><a href="#">Nature</a></li>
+                    <li><a href="#">Camping</a></li>
+                    <li><a href="#">Party</a></li>
+                </ul>
+            </div>
+
+            <!-- CONTACT -->
+            <div class="col-md-3">
+                <h3>Contact</h3>
+
+                <p><i class="fa fa-map-marker"></i> Bishnupur, Bankura</p>
+                <p><i class="fa fa-phone"></i> +91 7029255823</p>
+                <p><i class="fa fa-envelope"></i> example@gmail.com</p>
+
+            </div>
+
+        </div>
+
+        <!-- BOTTOM -->
+        <div class="footer-bottom text-center">
+            <p>
+                © <script>document.write(new Date().getFullYear());</script>
+                All rights reserved | Designed with ❤️
+            </p>
+        </div>
+
+    </div>
+</footer>
 {% endblock %}
