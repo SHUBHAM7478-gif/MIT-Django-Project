@@ -35,9 +35,15 @@ urlpatterns = [
     path('package-book/<int:id>/', views.package_booking, name='package_book'),
     path('hotel-book/<int:id>/', views.book_hotel, name='hotel_book'),
     path('my-bookings/', views.booking_history, name='my_bookings'),
-    path('my-bookings/delete/<int:id>/', views.delete, name='delete'),
+    path('my-bookings/delete/<int:id>/', views.cancel_booking, name='delete'),
     path('package/<int:id>/', views.package_details, name='package_details'),
     path('hotel/<int:id>/', views.hotel_details, name='hotel_details'),
+
+    # url for only package
+    path('show_package/', views.show_package, name="package"),
+
+    # url for only hotels
+    path('show_hotel/', views.show_hotel, name="hotel"),
 ]
 
 

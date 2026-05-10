@@ -11,7 +11,8 @@ def landing(request):
     return render(request, "travels.html", {
         "packages": result,
         "hotels": h,
-        "query": None
+        "query": None,
+        'user_name': request.session.get('user_name')
     })
 
 
@@ -77,13 +78,13 @@ def travels_page(request):
     })
 
 
-
+# Logout function
 def logout_user(request):
     request.session.flush()
     return redirect('/')
 
 
-
+# searching method
 def search_method(request):
     user_name = request.session.get('user_name')
 
@@ -107,7 +108,7 @@ def search_method(request):
 
 
 
-# hotel booking function
+# hotel booking system
 
 def book_hotel(request, id):
     user_id = request.session.get('user_id')
@@ -154,6 +155,7 @@ def book_hotel(request, id):
     return render(request, 'hotel.html', {'hotel': hotel,'user_name': request.session.get('user_name')})
 
 
+# package booking system
 def package_booking(request, id):
 
     if not request.session.get('user_id'):
@@ -207,12 +209,21 @@ def booking_history(request):
         'user_name': request.session.get('user_name')
     })
 
-def delete(request,id):
-    p=get_object_or_404(Booking,id=id)
-    p.delete()
+
+
+# cancelling system
+def cancel_booking(request,id):
+    booking = get_object_or_404(Booking, id=id)
+
+    if booking.hotel:
+        booking.hotel.room_availability += 1
+        booking.hotel.save()
+
+    booking.delete()
     return redirect('/my-bookings/')
 
 
+# showing details of package to user
 def package_details(request, id):
     user_id = request.session.get('user_id')
 
@@ -227,6 +238,9 @@ def package_details(request, id):
          'd':package.destination.description,
         'user_name': request.session.get('user_name')
     })
+
+
+# showing details of hotel to user
 def hotel_details(request, id):
     user_id = request.session.get('user_id')
 
@@ -237,5 +251,24 @@ def hotel_details(request, id):
 
     return render(request, 'viewdetails.html', {
         'hotel': hotel,
+        'user_name': request.session.get('user_name')
+    })
+
+
+# showing packages clicking package
+def show_package(request):
+    package = Package.objects.all()
+    return render(request, 'Show_Package.html', {
+        'packages' : package, 
+        'user_name': request.session.get('user_name')
+    })
+
+
+
+# showing hotel clicking hotel
+def show_hotel(request):
+    hotels = Hotel.objects.all()
+    return render(request, 'Show_Hotel.html', {
+        'hotels' : hotels, 
         'user_name': request.session.get('user_name')
     })
