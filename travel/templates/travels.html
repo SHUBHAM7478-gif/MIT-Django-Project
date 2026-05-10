@@ -1,40 +1,65 @@
 {% extends "bootstrap.html" %}
-
+{% block slide %}
+{% include "slider.html" %}
+{% endblock %}
 {% block content %}
 {% load static %}
 
-{% include "slider.html" %}
 
-<!-- Welcome -->
-<div class="mb-4">
+<div class="welcome-card mb-4 text-center">
+
     {% if user_name %}
-        <h3 class="fw-bold">Welcome {{ user_name }}</h3>
+        
+        <h2 class="welcome-title">Welcome {{ user_name }} 👋</h2>
     {% else %}
-        <h3 class="fw-bold">Welcome Guest</h3>
+        
+        <h2 class="welcome-title">Welcome Guest 👋</h2>
     {% endif %}
+
 </div>
 
 <!-- Search -->
 
                 
-<div class="card shadow-sm p-3 mb-4">
-    <form action="{% url 'search' %}" method="GET" class="d-flex">
-        <input type="text" name="search" class="form-control me-2" placeholder="Search destination...">
-        <button class="btn btn-primary">
-            Search
-        </button>
-    </form>
+<div class="card search-card border-0 shadow-lg p-4 mb-4">
+  
+  <form action="{% url 'search' %}" method="GET" class="d-flex search-form">
+
+    <input type="text" 
+           name="search" 
+           class="form-control search-input me-2" 
+           placeholder="🔍 Search destination...">
+
+    <button class="btn search-btn">
+        Search
+    </button>
+
+  </form>
+
 </div>
      
 
-<h3 class="text-center mb-4">
+<div class="text-center mb-5">
+  
+  <h6 class="custom-subtitle">
+    {% if query %}
+      Results Found
+    {% else %}
+      Featured Plans
+    {% endif %}
+  </h6>
+
+  <h2 class="custom-title">
     {% if query %}
       Search Results
     {% else %}
-      Popular Plan
+      Popular Plans
     {% endif %}
-  </h3>
+  </h2>
 
+  <div class="mx-auto mt-3 bg-primary rounded-pill"
+       style="width:70px;height:4px;"></div>
+</div>
 <!--  PACKAGES  -->
 {% if packages %}
 <h4 class="mb-3">🌍 Packages</h4>
@@ -484,6 +509,7 @@ style="background-image:url('{% static "images/bg_3.jpg" %}');">
 
     </div>
 </footer> {% endcomment %}
-
+{% endblock %}
+{% block footer %}
 {% include 'footer.html' %}
 {% endblock %}

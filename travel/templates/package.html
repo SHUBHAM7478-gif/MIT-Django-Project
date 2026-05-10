@@ -2,29 +2,93 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
+<div class="container py-5">
 
-        <div class="card shadow p-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
 
-            <form method="POST">
-                {% csrf_token %}
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
 
-                <input type="text" name="name" class="form-control mb-3" placeholder="Name">
-                <input type="email" name="email" class="form-control mb-3" placeholder="Email">
-                <input type="text" name="address" class="form-control mb-3" placeholder="Address">
+                <!-- Package Header -->
+                <div class="bg-dark text-white text-center py-4">
+                    <h2 class="fw-bold">Tour Package Booking</h2>
+                    <p class="mb-0">Plan your perfect trip with us</p>
+                </div>
 
-                <input type="date" name="check_in" class="form-control mb-3" placeholder="TOUR AT">
-                <input type="date" name="check_out" class="form-control mb-3" placeholder="TOUR OUT">
+                <!-- Form Body -->
+                <div class="card-body p-5">
 
-                <input type="number" name="guests" class="form-control mb-3" placeholder="Guests">
+                    <form method="POST">
+                        {% csrf_token %}
 
-                <button class="btn btn-primary w-100">Confirm Booking</button>
+                        <!-- Personal Info -->
+                        <h5 class="mb-3 text-primary fw-bold">Personal Information</h5>
 
-            </form>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Full Name</label>
+                            <input type="text"
+                                   name="name"
+                                   class="form-control rounded-3"
+                                   placeholder="Enter your full name"required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Email Address</label>
+                            <input type="email"
+                                   name="email"
+                                   class="form-control rounded-3"
+                                   placeholder="Enter your email" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Address</label>
+                            <textarea name="address"
+                                      rows="3"
+                                      class="form-control rounded-3"
+                                      placeholder="Enter your address" required></textarea>
+                        </div>
+
+                        <!-- Tour Details -->
+                        <h5 class="mb-3 text-primary fw-bold">Tour Details</h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Tour Start Date</label>
+                                <input type="date"
+                                       name="check_in"
+                                       class="form-control rounded-3">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Tour End Date</label>
+                                <input type="date"
+                                       name="check_out"
+                                       class="form-control rounded-3">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Number of Guests</label>
+                            <input type="number"
+                                   name="guests"
+                                   class="form-control rounded-3"
+                                   placeholder="Enter number of guests" required>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button class="btn btn-primary w-100 py-2 rounded-3 fw-bold">
+                            Confirm Package Booking
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
 
         </div>
     </div>
+
 </div>
 
 {% endblock %}
