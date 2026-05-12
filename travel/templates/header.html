@@ -1,247 +1,160 @@
-
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top custom-navbar">
-
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top premium-navbar">
   <div class="container">
 
-    <!-- LOGO -->
     <a class="navbar-brand fw-bold fs-3 text-warning" href="/">
       ✈ Trip Travels
     </a>
 
-    <!-- MOBILE TOGGLE -->
-    <button class="navbar-toggler border-0 shadow-none"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarContent">
-
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
       <span class="navbar-toggler-icon"></span>
-
     </button>
 
-    <!-- NAVBAR CONTENT -->
     <div class="collapse navbar-collapse" id="navbarContent">
 
-      <!-- CENTER MENU -->
-      <ul class="navbar-nav mx-auto gap-lg-3 text-center">
-
+      <ul class="navbar-nav mx-auto gap-lg-4 text-center">
         <li class="nav-item">
-          <a class="nav-link active fw-semibold"
-             href="{% url 'travels' %}">
-            Home
-          </a>
-        </li>
+  <a class="nav-link {% if request.resolver_match.url_name == 'travels' %}active{% endif %}" href="{% url 'travels' %}">
+    Home
+  </a>
+</li>
 
-        <li class="nav-item">
-          <a class="nav-link fw-semibold"
-             href="{% url 'my_bookings' %}">
-            My Bookings
-          </a>
-        </li>
+<li class="nav-item">
+  <a class="nav-link {% if request.resolver_match.url_name == 'my_bookings' %}active{% endif %}" href="{% url 'my_bookings' %}">
+    My Bookings
+  </a>
+</li>
 
-        <li class="nav-item">
-          <a class="nav-link fw-semibold"
-             href="{% url 'package' %}">
-            Packages
-          </a>
-        </li>
+<li class="nav-item">
+  <a class="nav-link {% if request.resolver_match.url_name == 'package' %}active{% endif %}" href="{% url 'package' %}">
+    Packages
+  </a>
+</li>
 
-        <li class="nav-item">
-          <a class="nav-link fw-semibold"
-             href="{% url 'hotel' %}">
-            Hotels
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link fw-semibold"
-             href="#">
-            Contact
-          </a>
-        </li>
-
+<li class="nav-item">
+  <a class="nav-link {% if request.resolver_match.url_name == 'hotel' %}active{% endif %}" href="{% url 'hotel' %}">
+    Hotels
+  </a>
+</li>
       </ul>
 
-      <!-- RIGHT SIDE -->
       <ul class="navbar-nav align-items-center gap-2">
-
         {% if user_name %}
+            <a href="{% url "cart_details" %}"
+            class="btn btn-cart position-relative">
 
-          <li class="nav-item">
-            <span class="nav-link text-light fw-semibold">
-              👋 Hi, {{ user_name }}
-            </span>
-          </li>
-
-          <li class="nav-item">
-            <a class="btn btn-warning px-4 rounded-pill fw-semibold"
-               href="{% url 'logout' %}">
-              Logout
-            </a>
-          </li>
-
+              🛒 Cart
+          </a>
+          <li class="nav-item"><span class="nav-link">👋 Hi, {{ user_name }}</span></li>
+          <li class="nav-item"><a class="btn gold-btn" href="{% url 'logout' %}">Logout</a></li>
         {% else %}
-
-          <li class="nav-item">
-            <a class="btn btn-outline-light rounded-pill px-4"
-               href="{% url 'login' %}">
-              Login
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="btn btn-warning rounded-pill px-4 fw-semibold"
-               href="{% url 'register' %}">
-              Register
-            </a>
-          </li>
-
+          <li class="nav-item"><a class="btn outline-btn" href="{% url 'login' %}">Login</a></li>
+          <li class="nav-item"><a class="btn gold-btn" href="{% url 'register' %}">Register</a></li>
         {% endif %}
-
       </ul>
 
     </div>
-
   </div>
-
 </nav>
 
-<!-- =========================
-     PAGE SPACING
-========================= -->
-
-<div style="margin-top: 90px;"></div>
-
-<!-- =========================
-     CUSTOM CSS
-========================= -->
-
 <style>
-
-/* =========================
-   NAVBAR STYLE
-========================= */
-
-.custom-navbar{
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(10px);
-
-    padding: 14px 0;
-
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-
-    transition: all 0.3s ease;
-
-    z-index: 9999;
+.premium-navbar{
+  background:#050a12 !important;
+  padding:16px 0;
+  z-index:99999;
+  box-shadow:0 8px 25px rgba(0,0,0,.25);
 }
 
-/* LOGO */
-
-.navbar-brand{
-    letter-spacing: 1px;
-    transition: 0.3s;
+.premium-logo{
+  font-family:'Playfair Display',serif;
+  font-size:34px;
+  font-weight:900;
+  color:#fff !important;
 }
-
-.navbar-brand:hover{
-    transform: scale(1.03);
-    color: #ffc107 !important;
-}
-
-/* NAV LINKS */
 
 .nav-link{
-    color: #fff !important;
-
-    font-size: 16px;
-    position: relative;
-
-    transition: all 0.3s ease;
+  color:#fff !important;
+  font-weight:700;
 }
 
-/* HOVER */
-
-.nav-link:hover{
-    color: #ffc107 !important;
-}
-
-/* UNDERLINE EFFECT */
-
-.nav-link::after{
-    content: '';
-
-    position: absolute;
-
-    left: 0;
-    bottom: -4px;
-
-    width: 0%;
-    height: 2px;
-
-    background: #ffc107;
-
-    transition: 0.3s ease;
-}
-
-.nav-link:hover::after{
-    width: 100%;
-}
-
-/* ACTIVE LINK */
-
+.nav-link:hover,
 .nav-link.active{
-    color: #ffc107 !important;
+  color:#f5b642 !important;
 }
 
-/* BUTTONS */
-
-.btn{
-    transition: 0.3s ease;
+.gold-btn{
+  background:#f5b642;
+  color:#111 !important;
+  border-radius:50px;
+  padding:10px 24px;
+  font-weight:800;
 }
 
-.btn-warning{
+.outline-btn{
+  color:#fff !important;
+  border:1px solid #fff;
+  border-radius:50px;
+  padding:9px 22px;
+}
+
+@media(max-width:991px){
+  .navbar-collapse{
+    background:#050a12;
+    padding:20px;
+    margin-top:15px;
+    border-radius:18px;
+  }
+}
+/* =========================
+   CART BUTTON
+========================= */
+
+.btn-cart{
+    background: linear-gradient(135deg,#ffb703,#ff8800);
+
     color: #000;
     font-weight: 600;
+
+    border-radius: 50px;
+
+    padding: 10px 22px;
+
+    transition: 0.3s ease;
+
+    border: none;
+
+    box-shadow: 0 5px 15px rgba(255,193,7,0.3);
 }
 
-.btn-warning:hover{
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255,193,7,0.4);
+.btn-cart:hover{
+    transform: translateY(-3px);
+
+    color: #000;
+
+    box-shadow: 0 8px 20px rgba(255,193,7,0.5);
 }
 
-.btn-outline-light:hover{
-    transform: translateY(-2px);
+/* CART BADGE */
+
+.cart-badge{
+    position: absolute;
+
+    top: -6px;
+    right: -6px;
+
+    width: 22px;
+    height: 22px;
+
+    border-radius: 50%;
+
+    background: red;
+
+    color: white;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
-/* MOBILE MENU */
-
-.navbar-toggler{
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-/* MOBILE RESPONSIVE */
-
-@media(max-width: 991px){
-
-    .navbar-collapse{
-        background: rgba(0,0,0,0.95);
-
-        padding: 20px;
-        border-radius: 15px;
-
-        margin-top: 15px;
-    }
-
-    .navbar-nav{
-        gap: 10px;
-    }
-
-    .nav-link::after{
-        display: none;
-    }
-
-    .btn{
-        width: 100%;
-    }
-}
-
 </style>

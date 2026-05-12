@@ -1,515 +1,459 @@
 {% extends "bootstrap.html" %}
+{% load static %}
+
 {% block slide %}
 {% include "slider.html" %}
 {% endblock %}
+
 {% block content %}
-{% load static %}
 
+<style>
+body{
+    background:
+        radial-gradient(circle at 8% 8%, rgba(255,196,72,.36), transparent 24%),
+        radial-gradient(circle at 92% 18%, rgba(0,184,217,.24), transparent 26%),
+        radial-gradient(circle at 12% 75%, rgba(245,182,66,.22), transparent 30%),
+        radial-gradient(circle at 88% 85%, rgba(0,184,217,.20), transparent 32%),
+        linear-gradient(135deg,#fff2d8 0%,#eefaff 40%,#fff5df 75%,#eafaff 100%) !important;
+    background-attachment:fixed !important;
+    min-height:100vh;
+    overflow-x:hidden;
+}
 
-<div class="welcome-card mb-4 text-center">
+/* WELCOME + SEARCH */
+.luxury-welcome{
+    margin-top:-28px;
+    margin-bottom:70px;
+    position:relative;
+    z-index:5;
+    animation:fadeUp .8s ease both;
+}
 
-    {% if user_name %}
-        
-        <h2 class="welcome-title">Welcome {{ user_name }} 👋</h2>
-    {% else %}
-        
-        <h2 class="welcome-title">Welcome Guest 👋</h2>
-    {% endif %}
+.welcome-panel{
+    text-align:center;
+    margin-bottom:26px;
+}
 
-</div>
+.welcome-title{
+    font-family:'Playfair Display',serif;
+    font-size:54px;
+    font-weight:900;
+    color:#07111f;
+    letter-spacing:-1px;
+}
 
-<!-- Search -->
+.welcome-subtitle{
+    color:#64748b;
+    font-size:16px;
+    margin-top:10px;
+}
 
-                
-<div class="card search-card border-0 shadow-lg p-4 mb-4">
-  
-  <form action="{% url 'search' %}" method="GET" class="d-flex search-form">
+.search-glass-box{
+    max-width:980px;
+    margin:0 auto;
+    background:rgba(255,255,255,.78) !important;
+    backdrop-filter:blur(25px);
+    border-radius:32px;
+    border:1px solid rgba(255,255,255,.88);
+    box-shadow:
+      0 28px 75px rgba(15,23,42,.13),
+      0 0 28px rgba(245,182,66,.10);
+    padding:26px;
+}
 
-    <input type="text" 
-           name="search" 
-           class="form-control search-input me-2" 
-           placeholder="🔍 Search destination...">
+.search-input{
+    height:62px;
+    border-radius:50px;
+    border:1px solid rgba(255,255,255,.9);
+    background:rgba(255,255,255,.94);
+    padding-left:28px;
+}
 
-    <button class="btn search-btn">
-        Search
-    </button>
+.search-input:focus{
+    border-color:#f5b642;
+    box-shadow:0 0 0 5px rgba(245,182,66,.24);
+}
 
-  </form>
+.search-btn{
+    min-width:165px;
+    border-radius:50px;
+    background:linear-gradient(135deg,#f5b642,#ff8a00);
+    color:#111;
+    font-weight:900;
+    border:none;
+    box-shadow:0 14px 32px rgba(245,182,66,.35);
+}
 
-</div>
-     
+/* HEADING */
+.section-subtitle{
+    color:#d89216;
+    text-transform:uppercase;
+    letter-spacing:4px;
+    font-size:13px;
+    font-weight:900;
+}
 
-<div class="text-center mb-5">
-  
-  <h6 class="custom-subtitle">
-    {% if query %}
-      Results Found
-    {% else %}
-      Featured Plans
-    {% endif %}
-  </h6>
+.section-title{
+    font-family:'Playfair Display',serif;
+    font-size:54px;
+    font-weight:900;
+    color:#07111f;
+}
 
-  <h2 class="custom-title">
-    {% if query %}
-      Search Results
-    {% else %}
-      Popular Plans
-    {% endif %}
-  </h2>
+.premium-section-heading{
+    font-family:'Playfair Display',serif;
+    font-weight:900;
+    color:#07111f;
+    font-size:34px;
+}
 
-  <div class="mx-auto mt-3 bg-primary rounded-pill"
-       style="width:70px;height:4px;"></div>
-</div>
-<!--  PACKAGES  -->
-{% if packages %}
-<h4 class="mb-3">🌍 Packages</h4>
+/* CARDS */
+.luxury-card{
+    position:relative;
+    border-radius:32px !important;
+    overflow:hidden !important;
+    background:linear-gradient(145deg,rgba(255,255,255,.90),rgba(242,251,255,.78)) !important;
+    border:1.5px solid rgba(245,182,66,.30) !important;
+    box-shadow:
+      0 22px 58px rgba(15,23,42,.13),
+      0 0 28px rgba(245,182,66,.12) !important;
+    transition:.45s ease;
+    animation:cardRise .8s ease both;
+}
 
-<div class="row">
-    {% for p in packages %}
-    <div class="col-md-4 mb-4">
+.luxury-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(135deg,rgba(255,255,255,.28),transparent 45%,rgba(245,182,66,.12));
+    opacity:0;
+    transition:.4s ease;
+    pointer-events:none;
+    z-index:2;
+}
 
-        <div class="card shadow-sm h-100">
+.luxury-card:hover::before{
+    opacity:1;
+}
 
-            <img src="{{ p.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+.luxury-card:hover{
+    transform:translateY(-12px) scale(1.015);
+    box-shadow:
+      0 35px 85px rgba(15,23,42,.20),
+      0 0 38px rgba(245,182,66,.22) !important;
+}
 
-            <div class="card-body">
+.luxury-img-wrap{
+    position:relative;
+    overflow:hidden;
+}
 
-                <h5 class="card-title">{{ p.package_name }}</h5>
+.luxury-img-wrap::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.10);
+    opacity:0;
+    transition:.4s ease;
+}
 
-                <p class="text-muted small">
-                    {{ p.destination.name }} • {{ p.duration_days }} days
-                </p>
+.luxury-card:hover .luxury-img-wrap::after{
+    opacity:1;
+}
 
-                <p>{{ p.package_description|truncatewords:10 }}</p>
+.luxury-img{
+    height:230px !important;
+    width:100%;
+    object-fit:cover;
+    transition:.65s ease;
+    filter:saturate(1.08) contrast(1.02);
+}
 
-                <p class="fw-bold text-success">
-                    ₹{{ p.package_price }}
-                </p>
+.luxury-card:hover .luxury-img{
+    transform:scale(1.1);
+}
 
-                <p class="small text-muted">
-                    Hotel: {{ p.hotel_name.hotel_name }}
-                </p>
+.card-body{
+    background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,248,232,.65)) !important;
+}
 
-                <a href="{% url 'package_book' p.id %}" 
-                   class="btn btn-success w-40">
-                   Book Package
-                </a>
-                <a href="{% url 'package_details' p.id %}"
-              class="btn btn-secondary w-40">
-             View Details
-             </a>
+.luxury-badge{
+    position:absolute;
+    top:18px;
+    left:18px;
+    background:linear-gradient(135deg,#07111f,#17233b);
+    color:#f5b642;
+    padding:9px 18px;
+    border-radius:50px;
+    font-size:13px;
+    font-weight:900;
+    border:1px solid rgba(245,182,66,.42);
+    box-shadow:0 10px 24px rgba(0,0,0,.22);
+    z-index:3;
+}
 
-            </div>
-        </div>
+.card-name{
+    font-family:'Poppins',sans-serif;
+    font-size:20px;
+    font-weight:800;
+    color:#07111f;
+}
 
+.price-text{
+    font-size:28px;
+    color:#009b76;
+    font-weight:900;
+}
+
+.mini-info{
+    color:#64748b;
+    font-size:14px;
+}
+
+.desc-text{
+    color:#64748b;
+    min-height:52px;
+}
+
+/* BUTTONS */
+.premium-btn{
+    border-radius:50px;
+    padding:12px 21px;
+    font-weight:900;
+    border:none;
+    transition:.35s ease;
+}
+
+.book-btn{
+    background:linear-gradient(135deg,#00c6e8,#0077b6);
+    color:#fff;
+    box-shadow:0 12px 28px rgba(0,184,217,.28);
+}
+
+.details-btn{
+    background:linear-gradient(135deg,#07111f,#182745);
+    color:#fff;
+    box-shadow:0 12px 28px rgba(7,17,31,.25);
+}
+
+.book-btn:hover,
+.details-btn:hover,
+.search-btn:hover{
+    transform:translateY(-3px);
+}
+
+.book-btn:hover,
+.details-btn:hover{
+    color:#fff;
+}
+
+.search-btn:hover{
+    color:#111;
+}
+
+.empty-alert{
+    border-radius:24px;
+    border:none;
+    background:rgba(255,255,255,.76);
+    backdrop-filter:blur(20px);
+    box-shadow:0 20px 50px rgba(15,23,42,.10);
+}
+
+/* ANIMATION */
+@keyframes fadeUp{
+    from{opacity:0; transform:translateY(28px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+@keyframes cardRise{
+    from{opacity:0; transform:translateY(36px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+/* MOBILE */
+@media(max-width:768px){
+    .section-title{
+        font-size:34px;
+    }
+
+    .welcome-title{
+        font-size:34px;
+    }
+
+    .search-form{
+        flex-direction:column;
+        gap:15px;
+    }
+
+    .search-btn{
+        width:100%;
+        height:58px;
+    }
+
+    .luxury-card{
+        border-radius:28px !important;
+    }
+
+    .luxury-img{
+        height:215px !important;
+    }
+    
+}
+</style>
+
+<section class="luxury-welcome">
+
+    <div class="welcome-panel">
+        {% if user_name %}
+            <h1 class="welcome-title">Welcome {{ user_name }} 👋</h1>
+        {% else %}
+            <h1 class="welcome-title">Welcome Guest 👋</h1>
+        {% endif %}
+
+        <p class="welcome-subtitle">
+            Discover premium destinations, luxury hotels and unforgettable travel experiences.
+        </p>
     </div>
-    {% endfor %}
-</div>
-{% endif %}
 
-
-{% if hotels %}
-<h4 class="mb-3 mt-4">🏨 Hotels</h4>
-
-<div class="row">
-    {% for h in hotels %}
-    <div class="col-md-4 mb-4">
-
-        <div class="card shadow-sm h-100">
-
-            <img src="{{ h.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
-
-            <div class="card-body">
-
-                <h5 class="card-title">{{ h.hotel_name }}</h5>
-
-                <p class="text-muted small">
-                    {{ h.destination.name }}
-                </p>
-
-                <p class="small">
-                    {{ h.hotel_address|truncatewords:10 }}
-                </p>
-
-                <p>
-                    ⭐ {{ h.ratings }}
-                </p>
-
-                <p class="fw-bold text-success">
-                    ₹{{ h.price_per_night }} / night
-                </p>
-
-                <p class="small text-muted">
-                    Rooms: {{ h.room_availability }}
-                </p>
-
-               <a href="{% url 'hotel_book' h.id %}" 
-                 class="btn btn-primary w-50">
-                  Book Hotel
-                </a>
-
-            <a href="{% url 'hotel_details' h.id %}"
-              class="btn btn-secondary w-40">
-             View Details
-             </a>
-            </div>
-        </div>
-
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
-
-<!-- NO RESULT -->
-{% if query and not packages and not hotels %}
-<div class="alert alert-warning text-center mt-4">
-    No results found for "{{ query }}"
-</div>
-{% endif %}
-
-{% comment %} <section class="ftco-section services-section py-5 bg-light">
-	<div class="container">
-		<div class="row align-items-center">
-
-			<!-- Left Content -->
-			<div class="col-lg-5 mb-5 mb-lg-0 ftco-animate">
-				<div class="pe-lg-5">
-					<span class="text-primary fw-bold text-uppercase">
-						Welcome to Trips Travels
-					</span>
-
-					<h2 class="mt-3 mb-4 fw-bold display-5">
-						It's Time To Start Your Adventure
-					</h2>
-
-					<p class="text-muted fs-6">
-						Discover amazing destinations, unforgettable experiences,
-						and premium travel services designed for every traveler.
-					</p>
-
-					<p class="text-muted">
-						From breathtaking mountains to relaxing beaches,
-						our expert team helps you create memories that last forever.
-					</p>
-
-					<a href="#" class="btn btn-primary px-4 py-3 rounded-pill shadow-sm mt-3">
-						Search Destination
-					</a>
-				</div>
-			</div>
-
-			<!-- Right Cards -->
-			<div class="col-lg-7">
-				<div class="row g-4">
-
-					<!-- Card 1 -->
-					<div class="col-md-6 ftco-animate">
-						<div class="service-card position-relative overflow-hidden rounded-4 shadow">
-							<img src="{% static 'images/services-1.jpg' %}" class="img-fluid w-100 service-img">
-
-							<div class="service-overlay p-4">
-								<div class="icon-box mb-3">
-									<span class="flaticon-paragliding"></span>
-								</div>
-
-								<h4 class="fw-bold"style="color: #ff8800;">Activities</h4>
-
-								<p>
-									Enjoy exciting adventures and outdoor activities.
-								</p>
-							</div>
-						</div>
-					</div>
-
-					<!-- Card 2 -->
-					<div class="col-md-6 ftco-animate">
-						<div class="service-card position-relative overflow-hidden rounded-4 shadow">
-							<img src="{% static 'images/services-2.jpg' %}" class="img-fluid w-100 service-img">
-
-							<div class="service-overlay p-4 ">
-								<div class="icon-box mb-3">
-									<span class="flaticon-route"></span>
-								</div>
-
-								<h4 class="fw-bold" style="color: #ff8800;">Travel Plans</h4>
-
-								<p>
-									Complete travel arrangements with comfort and safety.
-								</p>
-							</div>
-						</div>
-					</div>
-
-					<!-- Card 3 -->
-					<div class="col-md-6 ftco-animate">
-						<div class="service-card position-relative overflow-hidden rounded-4 shadow">
-							<img src="{% static 'images/services-3.jpg' %}" class="img-fluid w-100 service-img">
-
-							<div class="service-overlay p-4 ">
-								<div class="icon-box mb-3">
-									<span class="flaticon-tour-guide"></span>
-								</div>
-
-								<h4 class="fw-bold" style="color: #ff8800;">Private Guide</h4>
-
-								<p>
-									Professional guides for your unforgettable journey.
-								</p>
-							</div>
-						</div>
-					</div>
-
-					<!-- Card 4 -->
-					<div class="col-md-6 ftco-animate">
-						<div class="service-card position-relative overflow-hidden rounded-4 shadow">
-							<img src="{% static 'images/services-4.jpg' %}" class="img-fluid w-100 service-img">
-
-							<div class="service-overlay p-4">
-								<div class="icon-box mb-3">
-									<span class="flaticon-map"></span>
-								</div>
-
-								<h4 class="fw-bold" style="color: #ff8800;">Location Manager</h4>
-
-								<p>
-									Find the best destinations and hidden travel gems.
-								</p>
-							</div>
-						</div>
-					</div>
-
-				</div>
-			</div>
-
-		</div>
-	</div>
-</section>
-{% endblock %}
-{% block footer %}
-<section class="testimonial-section"
-style="background-image:url('{% static "images/bg_1.jpg" %}');">
-
-    <div class="container">
-
-        <!-- HEADING -->
-        <div class="row justify-content-center mb-5">
-
-            <div class="col-lg-7 text-center">
-
-                <span class="testimonial-subtitle">
-                    Testimonial
-                </span>
-
-                <h2 class="testimonial-title">
-                    Tourist Feedback
-                </h2>
-
-                <p class="testimonial-desc">
-                    Real experiences from our happy travelers around the world.
-                </p>
-
-            </div>
-
-        </div>
-
-        <!-- CARDS -->
-        <div class="row g-4">
-
-            <!-- CARD 1 -->
-            <div class="col-lg-4 col-md-6">
-
-                <div class="testimonial-card">
-
-                    <div class="quote-icon">
-                        <span class="fa fa-quote-left"></span>
-                    </div>
-
-                    <div class="stars">
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                    </div>
-
-                    <p class="testimonial-text">
-                        Amazing travel experience with excellent service,
-                        luxury hotels, and unforgettable memories.
-                    </p>
-
-                    <div class="client-info">
-
-                        <div class="client-img"
-                        style="background-image:url('{% static "images/shuchana.jpeg" %}');">
-                        </div>
-
-                        <div class="client-details">
-                            <h5>Suchana Ghosh</h5>
-                            <span>Full Stack Developer</span>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- CARD 2 -->
-            <div class="col-lg-4 col-md-6">
-
-                <div class="testimonial-card">
-
-                    <div class="quote-icon">
-                        <span class="fa fa-quote-left"></span>
-                    </div>
-
-                    <div class="stars">
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                    </div>
-
-                    <p class="testimonial-text">
-                        The trip was perfectly organized and the destinations
-                        were absolutely breathtaking.
-                    </p>
-
-                    <div class="client-info">
-
-                        <div class="client-img"
-                        style="background-image:url('{% static "images/smriti.jpeg" %}');">
-                        </div>
-
-                        <div class="client-details">
-                            <h5>Smriti Raksit</h5>
-                            <span>Software Developer</span>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- CARD 3 -->
-            <div class="col-lg-4 col-md-6">
-
-                <div class="testimonial-card">
-
-                    <div class="quote-icon">
-                        <span class="fa fa-quote-left"></span>
-                    </div>
-
-                    <div class="stars">
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                    </div>
-
-                    <p class="testimonial-text">
-                        Friendly guides, safe journey, and premium facilities
-                        throughout the entire tour.
-                    </p>
-
-                    <div class="client-info">
-
-                        <div class="client-img"
-                        style="background-image:url('{% static "images/gopi.jpeg" %}');">
-                        </div>
-
-                        <div class="client-details">
-                            <h5>Gopinath Dey</h5>
-                            <span>Marketing Manager</span>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
+    <div class="search-glass-box">
+        <form action="{% url 'search' %}" method="GET" class="d-flex search-form">
+            <input type="text"
+                   name="search"
+                   class="form-control search-input me-md-3"
+                   placeholder="🔍 Search destination, hotel or package...">
+
+            <button class="btn search-btn">
+                Search
+            </button>
+        </form>
     </div>
 
 </section>
 
-<footer class="travel-footer"
-style="background-image:url('{% static "images/bg_3.jpg" %}');">
+<section>
 
-    <div class="footer-overlay"></div>
+    <div class="text-center mb-5">
+        <h6 class="section-subtitle">
+            {% if query %}
+                Results Found
+            {% else %}
+                Featured Luxury Plans
+            {% endif %}
+        </h6>
 
-    <div class="container">
+        <h2 class="section-title">
+            {% if query %}
+                Search Results
+            {% else %}
+                Popular Plans
+            {% endif %}
+        </h2>
 
-        <div class="row footer-top">
-
-            <!-- ABOUT -->
-            <div class="col-md-3">
-                <h3>About</h3>
-                <p>
-                    Explore the world with comfort and style.
-                    We provide the best travel experiences for you.
-                </p>
-
-                <div class="social-icons">
-                    <a href="#"><i class="fa fa-twitter"></i></a>
-                    <a href="#"><i class="fa fa-facebook"></i></a>
-                    <a href="#"><i class="fa fa-instagram"></i></a>
-                </div>
-            </div>
-
-            <!-- INFO -->
-            <div class="col-md-3">
-                <h3>Information</h3>
-                <ul>
-                    <li><a href="#">Online Enquiry</a></li>
-                    <li><a href="#">Booking Conditions</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Refund Policy</a></li>
-                    <li><a href="#">Call Us</a></li>
-                </ul>
-            </div>
-
-            <!-- EXPERIENCE -->
-            <div class="col-md-3">
-                <h3>Experience</h3>
-                <ul>
-                    <li><a href="#">Adventure</a></li>
-                    <li><a href="#">Hotels</a></li>
-                    <li><a href="#">Beach</a></li>
-                    <li><a href="#">Nature</a></li>
-                    <li><a href="#">Camping</a></li>
-                    <li><a href="#">Party</a></li>
-                </ul>
-            </div>
-
-            <!-- CONTACT -->
-            <div class="col-md-3">
-                <h3>Contact</h3>
-
-                <p><i class="fa fa-map-marker"></i> Bishnupur, Bankura</p>
-                <p><i class="fa fa-phone"></i> +91 7029255823</p>
-                <p><i class="fa fa-envelope"></i> example@gmail.com</p>
-
-            </div>
-
+        <div class="mx-auto mt-3 rounded-pill"
+             style="width:90px;height:5px;background:linear-gradient(90deg,#F5B642,#00B8D9);">
         </div>
-
-        <!-- BOTTOM -->
-        <div class="footer-bottom text-center">
-            <p>
-                © <script>document.write(new Date().getFullYear());</script>
-                All rights reserved | Designed with ❤️
-            </p>
-        </div>
-
     </div>
-</footer> {% endcomment %}
+
+    {% if packages %}
+    <h4 class="mb-4 premium-section-heading">🌍 Premium Packages</h4>
+
+    <div class="row g-4 mb-5">
+        {% for p in packages %}
+        <div class="col-lg-4 col-md-6">
+            <div class="luxury-card h-100">
+                <a href="{% url 'add_to_cart' p.id %}" class="wishlist-btn no-loader">
+                    <i class="fa fa-heart"></i>
+                 </a>
+
+                <div class="luxury-img-wrap">
+                    <img src="{{ p.image.url }}" class="luxury-img">
+                    <span class="luxury-badge">{{ p.duration_days }} Days Trip</span>
+                </div>
+
+                <div class="card-body p-4">
+                    <h5 class="card-name mb-2">{{ p.package_name }}</h5>
+
+                    <p class="mini-info mb-2">📍 {{ p.destination.name }}</p>
+
+                    <p class="desc-text">{{ p.package_description|truncatewords:14 }}</p>
+
+                    <p class="price-text mb-1">₹{{ p.package_price }}</p>
+
+                    <p class="mini-info mb-4">🏨 Hotel: {{ p.hotel_name.hotel_name }}</p>
+
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'package_book' p.id %}" class="btn premium-btn book-btn flex-fill">
+                           Book Now
+                        </a>
+
+                        <a href="{% url 'package_details' p.id %}" class="btn premium-btn details-btn flex-fill">
+                           Details
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if hotels %}
+    <h4 class="mb-4 mt-5 premium-section-heading">🏨 Luxury Hotels</h4>
+
+    <div class="row g-4 mb-5">
+        {% for h in hotels %}
+        <div class="col-lg-4 col-md-6">
+            <div class="luxury-card h-100">
+                <a href="{% url 'add_hotel_cart' h.id %}" class="wishlist-btn no-loader">
+                    <i class="fa fa-heart"></i>
+                </a>
+                <div class="luxury-img-wrap">
+                    <img src="{{ h.image.url }}" class="luxury-img">
+                    <span class="luxury-badge">⭐ {{ h.ratings }}</span>
+                </div>
+
+                <div class="card-body p-4">
+                    <h5 class="card-name mb-2">{{ h.hotel_name }}</h5>
+
+                    <p class="mini-info">📍 {{ h.destination.name }}</p>
+
+                    <p class="desc-text">{{ h.hotel_address|truncatewords:13 }}</p>
+
+                    <p class="price-text mb-1">
+                        ₹{{ h.price_per_night }}
+                        <span style="font-size:15px;">/ night</span>
+                    </p>
+
+                    <p class="mini-info mb-4">🛏 Rooms Available: {{ h.room_availability }}</p>
+
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'hotel_book' h.id %}" class="btn premium-btn book-btn flex-fill">
+                           Book Hotel
+                        </a>
+
+                        <a href="{% url 'hotel_details' h.id %}" class="btn premium-btn details-btn flex-fill">
+                           Details
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if query and not packages and not hotels %}
+    <div class="alert alert-warning text-center mt-4 empty-alert p-4">
+        No results found for "{{ query }}"
+    </div>
+    {% endif %}
+
+</section>
+
 {% endblock %}
+
 {% block footer %}
 {% include 'footer.html' %}
 {% endblock %}

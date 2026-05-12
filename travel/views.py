@@ -3,6 +3,8 @@ from .models import *
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
 from datetime import datetime
+from decimal import Decimal
+
 
 def landing(request):
     result = Package.objects.filter(populer_tour=True)[:3]
@@ -204,11 +206,22 @@ def booking_history(request):
 
     bookings = Booking.objects.filter(user_id=user_id).order_by('-booking_at')
 
-    return render(request, 'booking_history.html', {
+    # Calculate counts
+    packages_count = bookings.filter(package__isnull=False).count()
+    hotels_count = bookings.filter(hotel__isnull=False).count()
+    total_guests = sum(booking.guests for booking in bookings)
+    total_spent = sum(booking.total_price for booking in bookings)
+    
+    context = {
         'bookings': bookings,
-        'user_name': request.session.get('user_name')
-    })
+        'packages_count': packages_count,
+        'hotels_count': hotels_count,
+        'total_guests': total_guests,
+        'total_spent': total_spent,
+        'user_name' : request.session.get('user_name')
+    }
 
+    return render(request, 'booking_history.html', context)
 
 
 # cancelling system
@@ -272,3 +285,103 @@ def show_hotel(request):
         'hotels' : hotels, 
         'user_name': request.session.get('user_name')
     })
+
+def add_to_cart(request, id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect('login')
+    package = get_object_or_404(Package, id=id)
+   
+
+    cart = request.session.get('cart', [])
+
+    if id not in cart:
+        cart.append(id)
+
+    request.session['cart'] = cart
+
+    return redirect(request.META.get('HTTP_REFERER', '/travels/'))
+from .models import Hotel
+
+def add_hotel_cart(request, id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect('login')
+    hotel = get_object_or_404(Hotel, id=id)
+
+    hotel_cart = request.session.get('hotel_cart', [])
+
+    if id not in hotel_cart:
+        hotel_cart.append(id)
+
+    request.session['hotel_cart'] = hotel_cart
+    return redirect(request.META.get('HTTP_REFERER', '/travels/'))
+
+
+
+def remove_package_cart(request, id):
+
+    cart = request.session.get('cart', [])
+
+    if id in cart:
+        cart.remove(id)
+
+    request.session['cart'] = cart
+
+    return redirect('cart_details')
+
+
+def remove_hotel_cart(request, id):
+
+    hotel_cart = request.session.get('hotel_cart', [])
+
+    if id in hotel_cart:
+        hotel_cart.remove(id)
+
+    request.session['hotel_cart'] = hotel_cart
+
+    return redirect('cart_details')
+
+def cart_details(request):
+    
+    cart = request.session.get('cart', [])
+    hotel_cart = request.session.get('hotel_cart', [])
+
+    packages = Package.objects.filter(id__in=cart)
+    hotels = Hotel.objects.filter(id__in=hotel_cart)
+
+    total = 0
+
+    for p in packages:
+        total +=Decimal(p.package_price)
+
+    for h in hotels:
+        total +=Decimal(h.price_per_night)
+
+    context = {
+        'packages': packages,
+        'hotels': hotels,
+        'total': total,
+        'user_name': request.session.get('user_name')
+    }
+
+    return render(request, 'addcart.html', context)
+
+
+def foot(request):
+    page_type = request.GET.get('type')
+
+    context = {
+        'enquiry': page_type == 'enquiry',
+        'booking': page_type == 'booking',
+        'privacy': page_type == 'privacy',
+        'refund': page_type == 'refund',
+        'adventure': page_type == 'adventure',
+        'hotels': page_type == 'hotels',
+        'beach': page_type == 'beach',
+        'user_name': request.session.get('user_name')
+    }
+
+    return render(request, 'footerdetails.html', context)
