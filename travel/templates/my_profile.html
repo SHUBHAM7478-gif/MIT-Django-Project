@@ -1,0 +1,700 @@
+{% extends "bootstrap.html" %}
+
+{% block title %}My Profile - TripTravels{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="container py-5">
+    
+    <!-- Page Header -->
+    <div class="profile-header mb-5 fade-in-up">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="hero-badge mb-3">
+                    <span class="badge bg-accent-gradient px-4 py-2">
+                        <i class="fas fa-user-circle me-2"></i>Account Center
+                    </span>
+                </div>
+                <h1 class="display-4 fw-bold mb-3">
+                    My <span class="text-primary-gradient">Profile</span>
+                </h1>
+                <p class="lead text-muted mb-0">
+                    Manage your personal information, preferences, and account settings
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                <div class="profile-stats-card p-3 bg-white rounded-3 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Member Since</small>
+                            <h5 class="fw-bold mb-0">
+                                <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                                {{ member_since|default:"2024" }}
+                            </h5>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-award fa-2x text-primary opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Sidebar - Profile Navigation -->
+        <div class="col-lg-4 fade-in-up" style="animation-delay: 0.1s">
+            <div class="profile-sidebar card border-0 shadow-sm sticky-top" style="top: 100px;">
+                <!-- Profile Avatar Section -->
+                <div class="profile-avatar-section text-center py-4">
+                    <div class="avatar-wrapper position-relative d-inline-block">
+                        {% if user_profile.avatar %}
+                            <img src="{{ user_profile.avatar.url }}" alt="{{ user_name }}" class="profile-avatar rounded-circle">
+                        {% else %}
+                            <div class="default-avatar rounded-circle">
+                                <i class="fas fa-user-circle fa-5x"></i>
+                            </div>
+                        {% endif %}
+                        <button class="btn-change-avatar" data-bs-toggle="modal" data-bs-target="#changeAvatarModal">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                    <h4 class="mt-3 mb-1 fw-bold">{{ user_name }}</h4>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-envelope me-1"></i> {{ user_email|default:"user@example.com" }}
+                    </p>
+                    {% if user_phone %}
+                        <p class="text-muted small mb-0">
+                            <i class="fas fa-phone me-1"></i> {{ user_phone }}
+                        </p>
+                    {% endif %}
+                    <div class="mt-3">
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle me-1"></i> Verified Account
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Navigation Tabs -->
+                <div class="profile-nav p-3">
+                    <div class="nav flex-column nav-pills" id="profileTab" role="tablist">
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#overview" type="button" role="tab">
+                            <i class="fas fa-chart-line me-2"></i> Overview
+                        </button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#personal-info" type="button" role="tab">
+                            <i class="fas fa-user-edit me-2"></i> Personal Information
+                        </button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#security" type="button" role="tab">
+                            <i class="fas fa-shield-alt me-2"></i> Security
+                        </button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#preferences" type="button" role="tab">
+                            <i class="fas fa-sliders-h me-2"></i> Preferences
+                        </button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#payment-methods" type="button" role="tab">
+                            <i class="fas fa-credit-card me-2"></i> Payment Methods
+                        </button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#notifications" type="button" role="tab">
+                            <i class="fas fa-bell me-2"></i> Notifications
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="profile-quick-stats p-3 border-top">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">Account Status</small>
+                        <span class="badge bg-success">Active</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">Total Bookings</small>
+                        <strong>{{ total_bookings|default:"0" }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted">Loyalty Points</small>
+                        <strong class="text-warning">{{ loyalty_points|default:"0" }} pts</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="col-lg-8 fade-in-up" style="animation-delay: 0.2s">
+            <div class="tab-content">
+                
+                <!-- Overview Tab -->
+                <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                    <!-- Welcome Card -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <div class="welcome-card text-center">
+                                <i class="fas fa-smile-wink fa-3x text-warning mb-3"></i>
+                                <h3 class="fw-bold mb-2">Welcome back, {{ user_name }}!</h3>
+                                <p class="text-muted">Here's what's happening with your travel account today.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Booking Summary -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-calendar-alt me-2 text-primary"></i>Booking Summary
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-4">
+                                <div class="col-md-3 col-6 text-center">
+                                    <div class="stat-circle bg-primary bg-opacity-10">
+                                        <i class="fas fa-suitcase fa-2x text-primary"></i>
+                                    </div>
+                                    <h4 class="mt-2 mb-0 fw-bold">{{ total_bookings|default:"0" }}</h4>
+                                    <small class="text-muted">Total Bookings</small>
+                                </div>
+                                <div class="col-md-3 col-6 text-center">
+                                    <div class="stat-circle bg-success bg-opacity-10">
+                                        <i class="fas fa-check-circle fa-2x text-success"></i>
+                                    </div>
+                                    <h4 class="mt-2 mb-0 fw-bold">{{ completed_bookings|default:"0" }}</h4>
+                                    <small class="text-muted">Completed</small>
+                                </div>
+                                <div class="col-md-3 col-6 text-center">
+                                    <div class="stat-circle bg-info bg-opacity-10">
+                                        <i class="fas fa-play-circle fa-2x text-info"></i>
+                                    </div>
+                                    <h4 class="mt-2 mb-0 fw-bold">{{ active_bookings|default:"0" }}</h4>
+                                    <small class="text-muted">Active</small>
+                                </div>
+                                <div class="col-md-3 col-6 text-center">
+                                    <div class="stat-circle bg-warning bg-opacity-10">
+                                        <i class="fas fa-clock fa-2x text-warning"></i>
+                                    </div>
+                                    <h4 class="mt-2 mb-0 fw-bold">{{ upcoming_bookings|default:"0" }}</h4>
+                                    <small class="text-muted">Upcoming</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-history me-2 text-primary"></i>Recent Activity
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            {% if recent_activities %}
+                                <div class="list-group list-group-flush">
+                                    {% for activity in recent_activities %}
+                                        <div class="list-group-item d-flex align-items-center">
+                                            <div class="activity-icon me-3">
+                                                <i class="fas {{ activity.icon }} fa-lg"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <p class="mb-0">{{ activity.description }}</p>
+                                                <small class="text-muted">{{ activity.date }}</small>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No recent activities to display</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Personal Information Tab -->
+                <div class="tab-pane fade" id="personal-info" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-user-edit me-2 text-primary"></i>Personal Information
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" action="#" id="profileForm">
+                                {% csrf_token %}
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-user me-1"></i>Full Name
+                                        </label>
+                                        <input type="text" class="form-control" name="full_name" value="{{ user_name }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-envelope me-1"></i>Email Address
+                                        </label>
+                                        <input type="email" class="form-control" name="email" value="{{ user_email }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-phone me-1"></i>Phone Number
+                                        </label>
+                                        <input type="tel" class="form-control" name="phone" value="{{ user_phone }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-calendar me-1"></i>Date of Birth
+                                        </label>
+                                        <input type="date" class="form-control" name="dob" value="{{ user_dob }}">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-map-marker-alt me-1"></i>Address
+                                        </label>
+                                        <textarea class="form-control" name="address" rows="3">{{ user_address }}</textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-city me-1"></i>City
+                                        </label>
+                                        <input type="text" class="form-control" name="city" value="{{ user_city }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-globe me-1"></i>Country
+                                        </label>
+                                        <select class="form-select" name="country">
+                                            <option value="India" {% if user_country == "India" %}selected{% endif %}>India</option>
+                                            <option value="USA" {% if user_country == "USA" %}selected{% endif %}>USA</option>
+                                            <option value="UK" {% if user_country == "UK" %}selected{% endif %}>UK</option>
+                                            <option value="Canada" {% if user_country == "Canada" %}selected{% endif %}>Canada</option>
+                                            <option value="Australia" {% if user_country == "Australia" %}selected{% endif %}>Australia</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="fas fa-save me-2"></i>Save Changes
+                                    </button>
+                                    <button type="reset" class="btn btn-outline-secondary px-4 ms-2">
+                                        <i class="fas fa-undo me-2"></i>Reset
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Tab -->
+                <div class="tab-pane fade" id="security" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-shield-alt me-2 text-primary"></i>Security Settings
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" action="#">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Current Password</label>
+                                    <input type="password" class="form-control" name="current_password" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">New Password</label>
+                                    <input type="password" class="form-control" name="new_password" required>
+                                    <small class="text-muted">Password must be at least 8 characters long</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Confirm New Password</label>
+                                    <input type="password" class="form-control" name="confirm_password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="fas fa-key me-2"></i>Change Password
+                                </button>
+                            </form>
+                            
+                            <hr class="my-4">
+                            
+                            <h6 class="fw-bold mb-3">Two-Factor Authentication</h6>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Enhance your account security by enabling two-factor authentication.
+                            </div>
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-mobile-alt me-2"></i>Enable 2FA
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Preferences Tab -->
+                <div class="tab-pane fade" id="preferences" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-sliders-h me-2 text-primary"></i>Preferences
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" action="#">
+                                {% csrf_token %}
+                                <h6 class="fw-bold mb-3">Travel Preferences</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Preferred Currency</label>
+                                    <select class="form-select" name="currency">
+                                        <option value="INR" {% if user_currency == "INR" %}selected{% endif %}>Indian Rupee (₹)</option>
+                                        <option value="USD" {% if user_currency == "USD" %}selected{% endif %}>US Dollar ($)</option>
+                                        <option value="EUR" {% if user_currency == "EUR" %}selected{% endif %}>Euro (€)</option>
+                                        <option value="GBP" {% if user_currency == "GBP" %}selected{% endif %}>British Pound (£)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Preferred Language</label>
+                                    <select class="form-select" name="language">
+                                        <option value="en" {% if user_language == "en" %}selected{% endif %}>English</option>
+                                        <option value="hi" {% if user_language == "hi" %}selected{% endif %}>Hindi</option>
+                                        <option value="es" {% if user_language == "es" %}selected{% endif %}>Spanish</option>
+                                        <option value="fr" {% if user_language == "fr" %}selected{% endif %}>French</option>
+                                    </select>
+                                </div>
+                                
+                                <h6 class="fw-bold mb-3 mt-4">Booking Preferences</h6>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="autoConfirm" name="auto_confirm" {% if auto_confirm %}checked{% endif %}>
+                                    <label class="form-check-label" for="autoConfirm">
+                                        Automatically confirm bookings
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="saveCards" name="save_cards" {% if save_cards %}checked{% endif %}>
+                                    <label class="form-check-label" for="saveCards">
+                                        Save payment methods for future bookings
+                                    </label>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary px-4 mt-3">
+                                    <i class="fas fa-save me-2"></i>Save Preferences
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Payment Methods Tab -->
+                <div class="tab-pane fade" id="payment-methods" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-credit-card me-2 text-primary"></i>Payment Methods
+                            </h5>
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addCardModal">
+                                <i class="fas fa-plus me-1"></i>Add Card
+                            </button>
+                        </div>
+                        <div class="card-body p-4">
+                            {% if payment_methods %}
+                                {% for payment in payment_methods %}
+                                    <div class="payment-card mb-3 p-3 border rounded-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <i class="fab fa-cc-{{ payment.card_type }} fa-2x"></i>
+                                                <div>
+                                                    <strong>•••• •••• •••• {{ payment.last_four }}</strong>
+                                                    <p class="mb-0 small text-muted">Expires {{ payment.expiry }}</p>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                {% if payment.is_default %}
+                                                    <span class="badge bg-success">Default</span>
+                                                {% endif %}
+                                                <button class="btn btn-sm btn-outline-danger ms-2">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fas fa-credit-card fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No payment methods added yet</p>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCardModal">
+                                        <i class="fas fa-plus me-2"></i>Add Your First Card
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notifications Tab -->
+                <div class="tab-pane fade" id="notifications" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-bell me-2 text-primary"></i>Notification Preferences
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" action="#">
+                                {% csrf_token %}
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="emailNotifications" name="email_notifications" {% if email_notifications %}checked{% endif %}>
+                                    <label class="form-check-label fw-semibold" for="emailNotifications">
+                                        Email Notifications
+                                    </label>
+                                    <p class="small text-muted mb-0">Receive booking confirmations and updates via email</p>
+                                </div>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="smsNotifications" name="sms_notifications" {% if sms_notifications %}checked{% endif %}>
+                                    <label class="form-check-label fw-semibold" for="smsNotifications">
+                                        SMS Notifications
+                                    </label>
+                                    <p class="small text-muted mb-0">Receive important updates via text message</p>
+                                </div>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="promoEmails" name="promo_emails" {% if promo_emails %}checked{% endif %}>
+                                    <label class="form-check-label fw-semibold" for="promoEmails">
+                                        Promotional Emails
+                                    </label>
+                                    <p class="small text-muted mb-0">Receive special offers and travel deals</p>
+                                </div>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="bookingReminders" name="booking_reminders" {% if booking_reminders %}checked{% endif %}>
+                                    <label class="form-check-label fw-semibold" for="bookingReminders">
+                                        Booking Reminders
+                                    </label>
+                                    <p class="small text-muted mb-0">Get reminders 24 hours before check-in</p>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary px-4 mt-3">
+                                    <i class="fas fa-save me-2"></i>Save Preferences
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Avatar Modal -->
+<div class="modal fade" id="changeAvatarModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Profile Picture</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="#" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="text-center mb-3">
+                        <div class="avatar-preview mb-3">
+                            <i class="fas fa-user-circle fa-5x text-muted"></i>
+                        </div>
+                        <input type="file" class="form-control" name="avatar" accept="image/*">
+                        <small class="text-muted">Recommended: Square image, max 2MB</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Upload Photo</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Card Modal -->
+<div class="modal fade" id="addCardModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Payment Method</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="#">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Card Number</label>
+                        <input type="text" class="form-control" placeholder="1234 5678 9012 3456" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Expiry Date</label>
+                            <input type="text" class="form-control" placeholder="MM/YY" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">CVV</label>
+                            <input type="password" class="form-control" placeholder="123" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cardholder Name</label>
+                        <input type="text" class="form-control" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="setDefault">
+                        <label class="form-check-label" for="setDefault">
+                            Set as default payment method
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Add Card</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Profile Page Styles */
+.text-primary-gradient {
+    background: linear-gradient(135deg, #1a5d7f 0%, #2d8bb8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.bg-accent-gradient {
+    background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);
+    color: white;
+}
+
+.profile-header {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    padding: 2rem;
+    border-radius: 24px;
+}
+
+.profile-sidebar {
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.profile-avatar-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.default-avatar {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0 auto;
+}
+
+.default-avatar i {
+    font-size: 80px;
+    color: white;
+}
+
+.btn-change-avatar {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a5d7f;
+    transition: all 0.3s ease;
+}
+
+.btn-change-avatar:hover {
+    transform: scale(1.1);
+}
+
+.profile-nav .nav-link {
+    color: #495057;
+    border-radius: 12px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.profile-nav .nav-link:hover {
+    background: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.profile-nav .nav-link.active {
+    background: linear-gradient(135deg, #1a5d7f 0%, #2d8bb8 100%);
+    color: white;
+}
+
+.stat-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-sidebar {
+        position: relative !important;
+        top: 0 !important;
+        margin-bottom: 20px;
+    }
+    
+    .profile-header h1 {
+        font-size: 2rem;
+    }
+}
+
+/* Form Styles */
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    padding: 10px 15px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #1a5d7f;
+    box-shadow: 0 0 0 0.2rem rgba(26, 93, 127, 0.25);
+}
+
+.form-switch .form-check-input:checked {
+    background-color: #1a5d7f;
+    border-color: #1a5d7f;
+}
+
+.payment-card {
+    transition: all 0.3s ease;
+}
+
+.payment-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+</style>
+
+{% endblock %}
