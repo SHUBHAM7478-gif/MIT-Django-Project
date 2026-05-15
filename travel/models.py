@@ -5,14 +5,38 @@ from django.contrib.auth.hashers import make_password, check_password
 
 
 # User model
+# User model
 class User(models.Model):
     user_name = models.CharField(max_length=100)
     user_email = models.EmailField(unique=True)
     user_password = models.CharField(max_length=255)
 
+    # Add Additional fields for profile
+    user_phone = models.CharField(max_length=15, blank=True, null=True)
+    user_dob = models.DateField(blank=True, null=True)
+    user_address = models.TextField(max_length=255, blank=True, null=True)
+    user_city = models.CharField(max_length=100, blank=True, null=True)
+    user_country = models.CharField(max_length=100, default="India", blank=True, null=True)
+    user_avatar = models.ImageField(upload_to='profile_avatars/', blank=True, null=True)
+
+    # preferences
+    preferred_currency = models.CharField(max_length=3, default='INR')
+    preferred_language = models.CharField(max_length=10, default='en')
+    auto_confirm_bookings = models.BooleanField(default=False)
+    save_payment_methods = models.BooleanField(default=True)
+
+    # notification settings - FIXED: Changed to match template
+    email_notifications = models.BooleanField(default=True)
+    sms_notifications = models.BooleanField(default=False)
+    promo_emails = models.BooleanField(default=True)  # ← Changed from promo_email
+    booking_reminders = models.BooleanField(default=True)  # ← Changed from bookings_reminders
+
+    # Account status
+    loyalty_points = models.IntegerField(default=0)
+    member_since = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return self.user_name
-    
 
 
 # Destination Model
