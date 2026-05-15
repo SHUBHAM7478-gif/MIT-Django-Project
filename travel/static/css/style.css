@@ -61,6 +61,7 @@ html, body{
 }
 
 .service-overlay p {
+    color: white;
 	font-size: 14px;
 	line-height: 1.7;
 }
@@ -605,3 +606,48 @@ p{
   border-radius: 18px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 } */
+/* wishlist */
+.wishlist-btn{
+    position:absolute;
+    top:18px;
+    right:18px;
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    background:rgba(255,255,255,.92);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    z-index:5;
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.8);
+    box-shadow:0 10px 25px rgba(0,0,0,.18);
+    transition:.35s ease;
+}
+.wishlist-btn:hover{
+    transform:none !important;
+}
+
+.luxury-card:hover{
+    transform:none;
+}
+
+.wishlist-btn i{
+    color:#ff4d6d;
+    font-size:18px;
+    transition:.35s ease;
+}
+
+.wishlist-btn:hover{
+    transform:scale(1.12);
+    background:#ff4d6d;
+}
+
+.wishlist-btn:hover i{
+    color:#fff;
+}
+.wishlist-btn:active{
+    transform:scale(.92);
+    
+}

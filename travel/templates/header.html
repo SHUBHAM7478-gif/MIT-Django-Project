@@ -1,4 +1,3 @@
-
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top custom-navbar">
 
   <div class="container">
@@ -25,7 +24,7 @@
       <ul class="navbar-nav mx-auto gap-lg-3 text-center">
 
         <li class="nav-item">
-          <a class="nav-link active fw-semibold"
+          <a class="nav-link fw-semibold"
              href="{% url 'travels' %}">
             Home
           </a>
@@ -61,37 +60,100 @@
 
       </ul>
 
-      <!-- RIGHT SIDE -->
+      <!-- RIGHT SIDE - Fixed Profile Button -->
       <ul class="navbar-nav align-items-center gap-2">
 
         {% if user_name %}
 
-          <li class="nav-item">
-            <span class="nav-link text-light fw-semibold">
-              👋 Hi, {{ user_name }}
-            </span>
-          </li>
-
-          <li class="nav-item">
-            <a class="btn btn-warning px-4 rounded-pill fw-semibold"
-               href="{% url 'logout' %}">
-              Logout
+          <!-- User Profile Dropdown - Using native Bootstrap classes -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle user-profile-trigger" 
+               href="#" 
+               role="button" 
+               data-bs-toggle="dropdown" 
+               data-bs-auto-close="true"
+               aria-expanded="false"
+               id="userDropdown">
+              <div class="user-avatar-wrapper">
+                <i class="fas fa-user-circle"></i>
+              </div>
+              <span class="user-greeting">{{ user_name }}</span>
             </a>
+            
+            <ul class="dropdown-menu dropdown-menu-end profile-dropdown" aria-labelledby="userDropdown">
+              <li>
+                <div class="dropdown-header">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="profile-avatar-lg">
+                      <i class="fas fa-user-circle fa-3x"></i>
+                    </div>
+                    <div class="profile-info">
+                      <h6 class="mb-0 fw-bold text-white">{{ user_name }}</h6>
+                      <small class="text-white-50">{{ user_email|default:"user@example.com" }}</small>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              
+              <li><hr class="dropdown-divider"></li>
+              
+              <li>
+                <a class="dropdown-item" href="{% url 'profile' %}">
+                  <i class="fas fa-id-card me-2"></i>
+                  <span>My Profile</span>
+                </a>
+              </li>
+              
+              <li>
+                <a class="dropdown-item" href="{% url 'my_bookings' %}">
+                  <i class="fas fa-bookmark me-2"></i>
+                  <span>My Bookings</span>
+                </a>
+              </li>
+              
+              <li>
+                <a class="dropdown-item" href="{% url "cart_details" %}">
+                  <i class="fas fa-heart me-2"></i>
+                  <span>Wishlist</span>
+                </a>
+              </li>
+              
+              <li>
+                <a class="dropdown-item" href="#">
+                  <i class="fas fa-cog me-2"></i>
+                  <span>Settings</span>
+                </a>
+              </li>
+              
+              <li><hr class="dropdown-divider"></li>
+              
+              <li>
+                <a class="dropdown-item" href="#">
+                  <i class="fas fa-headset me-2"></i>
+                  <span>Support</span>
+                </a>
+              </li>
+              
+              <li>
+                <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                  <i class="fas fa-sign-out-alt me-2"></i>
+                  <span>Logout</span>
+                </a>
+              </li>
+            </ul>
           </li>
 
         {% else %}
 
           <li class="nav-item">
-            <a class="btn btn-outline-light rounded-pill px-4"
-               href="{% url 'login' %}">
-              Login
+            <a class="btn btn-outline-light rounded-pill px-4" href="{% url 'login' %}">
+              <i class="fas fa-sign-in-alt me-2"></i>Login
             </a>
           </li>
 
           <li class="nav-item">
-            <a class="btn btn-warning rounded-pill px-4 fw-semibold"
-               href="{% url 'register' %}">
-              Register
+            <a class="btn btn-warning rounded-pill px-4 fw-semibold" href="{% url 'register' %}">
+              <i class="fas fa-user-plus me-2"></i>Register
             </a>
           </li>
 
@@ -124,18 +186,13 @@
 .custom-navbar{
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(10px);
-
     padding: 14px 0;
-
     box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-
     transition: all 0.3s ease;
-
     z-index: 9999;
 }
 
 /* LOGO */
-
 .navbar-brand{
     letter-spacing: 1px;
     transition: 0.3s;
@@ -147,37 +204,27 @@
 }
 
 /* NAV LINKS */
-
 .nav-link{
     color: #fff !important;
-
     font-size: 16px;
     position: relative;
-
     transition: all 0.3s ease;
 }
 
 /* HOVER */
-
 .nav-link:hover{
     color: #ffc107 !important;
 }
 
 /* UNDERLINE EFFECT */
-
 .nav-link::after{
     content: '';
-
     position: absolute;
-
     left: 0;
     bottom: -4px;
-
     width: 0%;
     height: 2px;
-
     background: #ffc107;
-
     transition: 0.3s ease;
 }
 
@@ -186,13 +233,11 @@
 }
 
 /* ACTIVE LINK */
-
 .nav-link.active{
     color: #ffc107 !important;
 }
 
 /* BUTTONS */
-
 .btn{
     transition: 0.3s ease;
 }
@@ -211,23 +256,139 @@
     transform: translateY(-2px);
 }
 
-/* MOBILE MENU */
+/* =========================
+   USER PROFILE BUTTON STYLES
+========================= */
 
+.user-profile-trigger {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px !important;
+    border-radius: 50px !important;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.user-profile-trigger:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.user-profile-trigger::after {
+    margin-left: 8px !important;
+    vertical-align: middle !important;
+}
+
+.user-avatar-wrapper {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-avatar-wrapper i {
+    font-size: 28px;
+    color: #ffc107;
+}
+
+.user-greeting {
+    font-weight: 500;
+    color: white;
+}
+
+/* Profile Dropdown Menu */
+.profile-dropdown {
+    min-width: 280px;
+    padding: 0;
+    margin-top: 12px;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.dropdown-header {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.profile-avatar-lg i {
+    color: white;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.profile-info h6 {
+    color: white;
+    margin-bottom: 5px;
+}
+
+.profile-info small {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 12px;
+}
+
+.dropdown-item {
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.dropdown-item i {
+    width: 20px;
+    color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background: #f8f9fa;
+    padding-left: 26px;
+}
+
+.dropdown-item:hover i {
+    color: #ffc107;
+    transform: translateX(2px);
+}
+
+.dropdown-item.text-danger:hover i {
+    color: #dc3545;
+}
+
+.dropdown-divider {
+    margin: 0;
+}
+
+/* Animation for dropdown */
+.dropdown-menu.show {
+    animation: fadeInDown 0.3s ease;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* MOBILE MENU */
 .navbar-toggler{
     outline: none !important;
     box-shadow: none !important;
 }
 
 /* MOBILE RESPONSIVE */
-
 @media(max-width: 991px){
 
     .navbar-collapse{
         background: rgba(0,0,0,0.95);
-
         padding: 20px;
         border-radius: 15px;
-
         margin-top: 15px;
     }
 
@@ -242,6 +403,203 @@
     .btn{
         width: 100%;
     }
+    
+    /* Mobile profile button adjustments */
+    .user-profile-trigger {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .profile-dropdown {
+        position: static !important;
+        width: 100%;
+        margin-top: 10px;
+        transform: none !important;
+    }
+    
+    .dropdown-menu.show {
+        position: static !important;
+        width: 100%;
+    }
 }
 
+/* Small screens */
+@media(max-width: 576px) {
+    .user-greeting {
+        display: none;
+    }
+    
+    .user-profile-trigger {
+        padding: 8px 12px !important;
+    }
+    
+    .profile-dropdown {
+        min-width: 100%;
+    }
+}
+
+/* Scrollbar Styling */
+.dropdown-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+    background: #ffc107;
+    border-radius: 3px;
+}
+
+</style>
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<!-- Ensure Bootstrap JS is loaded properly -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Comprehensive dropdown fix
+(function() {
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded - initializing dropdowns');
+        
+        // Method 1: Reinitialize all dropdowns
+        var dropdownElements = document.querySelectorAll('.dropdown-toggle');
+        dropdownElements.forEach(function(element) {
+            try {
+                // Remove any existing dropdown instance
+                var existingDropdown = bootstrap.Dropdown.getInstance(element);
+                if (existingDropdown) {
+                    existingDropdown.dispose();
+                }
+                // Create new dropdown instance
+                new bootstrap.Dropdown(element);
+                console.log('Dropdown initialized for:', element);
+            } catch(e) {
+                console.error('Error initializing dropdown:', e);
+            }
+        });
+        
+        // Method 2: Manual click handler as fallback
+        var profileTrigger = document.querySelector('.user-profile-trigger');
+        var dropdownMenu = document.querySelector('.profile-dropdown');
+        
+        if (profileTrigger && dropdownMenu) {
+            // Remove any existing click handlers
+            profileTrigger.removeEventListener('click', handleDropdownClick);
+            // Add new click handler
+            profileTrigger.addEventListener('click', handleDropdownClick);
+        }
+        
+        function handleDropdownClick(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            var menu = document.querySelector('.profile-dropdown');
+            var trigger = document.querySelector('.user-profile-trigger');
+            
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+                trigger.setAttribute('aria-expanded', 'false');
+            } else {
+                // Close other open dropdowns
+                document.querySelectorAll('.dropdown-menu.show').forEach(function(openMenu) {
+                    openMenu.classList.remove('show');
+                });
+                menu.classList.add('show');
+                trigger.setAttribute('aria-expanded', 'true');
+            }
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            var trigger = document.querySelector('.user-profile-trigger');
+            var menu = document.querySelector('.profile-dropdown');
+            
+            if (trigger && menu && !trigger.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('show');
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+        });
+        
+        // Add active link highlighting
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+        
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && href !== '#' && href !== '/' && currentPath.includes(href)) {
+                link.classList.add('active');
+            } else if (href === currentPath) {
+                link.classList.add('active');
+            }
+        });
+    });
+    
+    // Also run after any AJAX navigation (for frameworks like htmx, turbo, etc.)
+    if (typeof document.addEventListener !== 'undefined') {
+        document.addEventListener('turbo:load', reinitializeDropdowns);
+        document.addEventListener('htmx:afterSwap', reinitializeDropdowns);
+    }
+    
+    function reinitializeDropdowns() {
+        var dropdownElements = document.querySelectorAll('.dropdown-toggle');
+        dropdownElements.forEach(function(element) {
+            try {
+                var existingDropdown = bootstrap.Dropdown.getInstance(element);
+                if (existingDropdown) {
+                    existingDropdown.dispose();
+                }
+                new bootstrap.Dropdown(element);
+            } catch(e) {
+                console.error('Error reinitializing dropdown:', e);
+            }
+        });
+    }
+})();
+</script>
+
+<!-- Manual CSS fix for dropdown positioning -->
+<style>
+/* Ensure dropdown has proper z-index and positioning */
+.dropdown-menu {
+    z-index: 10000 !important;
+    display: none;
+}
+
+.dropdown-menu.show {
+    display: block !important;
+}
+
+/* Ensure the dropdown toggle works */
+.user-profile-trigger {
+    cursor: pointer !important;
+}
+
+/* Fix for Bootstrap dropdown animation */
+.dropdown-toggle::after {
+    display: inline-block !important;
+    margin-left: 8px !important;
+    vertical-align: middle !important;
+    content: "" !important;
+    border-top: 0.3em solid !important;
+    border-right: 0.3em solid transparent !important;
+    border-bottom: 0 !important;
+    border-left: 0.3em solid transparent !important;
+}
+
+/* Override any conflicting styles */
+.navbar-nav .dropdown-menu {
+    position: absolute !important;
+}
+
+@media (max-width: 991px) {
+    .navbar-nav .dropdown-menu {
+        position: static !important;
+    }
+}
 </style>

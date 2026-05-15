@@ -3,6 +3,10 @@ from .models import *
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
 from datetime import datetime
+from django.utils import timezone
+from decimal import Decimal
+from django.contrib import messages
+
 
 def landing(request):
     result = Package.objects.filter(populer_tour=True)[:3]
@@ -204,11 +208,22 @@ def booking_history(request):
 
     bookings = Booking.objects.filter(user_id=user_id).order_by('-booking_at')
 
-    return render(request, 'booking_history.html', {
+    # Calculate counts
+    packages_count = bookings.filter(package__isnull=False).count()
+    hotels_count = bookings.filter(hotel__isnull=False).count()
+    total_guests = sum(booking.guests for booking in bookings)
+    total_spent = sum(booking.total_price for booking in bookings)
+    
+    context = {
         'bookings': bookings,
-        'user_name': request.session.get('user_name')
-    })
+        'packages_count': packages_count,
+        'hotels_count': hotels_count,
+        'total_guests': total_guests,
+        'total_spent': total_spent,
+        'user_name' : request.session.get('user_name')
+    }
 
+    return render(request, 'booking_history.html', context)
 
 
 # cancelling system
@@ -272,3 +287,326 @@ def show_hotel(request):
         'hotels' : hotels, 
         'user_name': request.session.get('user_name')
     })
+
+
+# add to cart features upload for package
+def add_to_cart(request, id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect('login')
+    package = get_object_or_404(Package, id=id)
+   
+
+    cart = request.session.get('cart', [])
+
+    if id not in cart:
+        cart.append(id)
+
+    request.session['cart'] = cart
+
+    return redirect(request.META.get('HTTP_REFERER', '/travels/'))
+from .models import Hotel
+
+
+# add to cart for hotels
+def add_hotel_cart(request, id):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect('login')
+    hotel = get_object_or_404(Hotel, id=id)
+
+    hotel_cart = request.session.get('hotel_cart', [])
+
+    if id not in hotel_cart:
+        hotel_cart.append(id)
+
+    request.session['hotel_cart'] = hotel_cart
+    return redirect(request.META.get('HTTP_REFERER', '/travels/'))
+
+
+# remove from cart for package
+def remove_package_cart(request, id):
+
+    cart = request.session.get('cart', [])
+
+    if id in cart:
+        cart.remove(id)
+
+    request.session['cart'] = cart
+
+    return redirect('cart_details')
+
+# for hotel
+def remove_hotel_cart(request, id):
+
+    hotel_cart = request.session.get('hotel_cart', [])
+
+    if id in hotel_cart:
+        hotel_cart.remove(id)
+
+    request.session['hotel_cart'] = hotel_cart
+
+    return redirect('cart_details')
+
+
+# details of cart
+def cart_details(request):
+    
+    cart = request.session.get('cart', [])
+    hotel_cart = request.session.get('hotel_cart', [])
+
+    packages = Package.objects.filter(id__in=cart)
+    hotels = Hotel.objects.filter(id__in=hotel_cart)
+
+    total = 0
+
+    for p in packages:
+        total +=Decimal(p.package_price)
+
+    for h in hotels:
+        total +=Decimal(h.price_per_night)
+
+    context = {
+        'packages': packages,
+        'hotels': hotels,
+        'total': total,
+        'user_name': request.session.get('user_name')
+    }
+
+    return render(request, 'addcart.html', context)
+
+# for footer option
+def foot(request):
+    page_type = request.GET.get('type')
+
+    context = {
+        'enquiry': page_type == 'enquiry',
+        'booking': page_type == 'booking',
+        'privacy': page_type == 'privacy',
+        'refund': page_type == 'refund',
+        'adventure': page_type == 'adventure',
+        'hotels': page_type == 'hotels',
+        'beach': page_type == 'beach',
+        'user_name': request.session.get('user_name')
+    }
+
+    return render(request, 'footerdetails.html', context)
+
+
+def my_Profile(request):
+     # Get the logged-in user (you need to store user_id in session)
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+    
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return redirect('login')
+    
+    # Get user's bookings
+    bookings = Booking.objects.filter(user=user).order_by('-booking_at')
+    
+    # Calculate booking statistics
+    today = timezone.now().date()
+    completed_bookings = 0
+    active_bookings = 0
+    upcoming_bookings = 0
+    
+    for booking in bookings:
+        if booking.check_out and booking.check_out < today:
+            completed_bookings += 1
+        elif booking.check_in and booking.check_in <= today and booking.check_out and booking.check_out >= today:
+            active_bookings += 1
+        elif booking.check_in and booking.check_in > today:
+            upcoming_bookings += 1
+    
+    context = {
+        'user_name': request.session.get('user_name'),
+        'user': user,
+        'bookings': bookings,
+        'recent_bookings': bookings[:5],  # Last 5 bookings
+        'total_bookings': bookings.count(),
+        'completed_bookings': completed_bookings,
+        'active_bookings': active_bookings,
+        'upcoming_bookings': upcoming_bookings,
+        'member_since': user.member_since.year if user.member_since else 2024,
+        'today': today,
+    }
+    
+    return render(request, 'my_profile.html', context)
+
+
+
+
+def update_profile(request):
+
+    # update user profile info
+
+    if request.method == "POST":
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return redirect('login')
+
+        try:
+            user = User.objects.get(id = user_id)
+
+            # update user fields
+            user.user_name = request.POST.get('user_name')
+            user.user_email = request.POST.get('user_email')
+            user.user_phone = request.POST.get('user_phone')
+            user.user_dob = request.POST.get('user_dob') or None
+            user.user_address = request.POST.get('user_address')
+            user.user_city = request.POST.get('user_city')
+            user.user_country = request.POST.get('user_country')
+
+            user.save()
+            messages.success(request, 'Profile updated sucessfully!')
+
+        except User.DoesNotExist:
+            messages.success(request, 'User does not found!')
+
+    return redirect('profile')
+
+
+
+    
+
+def change_password(request):
+
+    # update user profile info
+
+    if request.method == "POST":
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return redirect('login')
+
+        try:
+            user = User.objects.get(id = user_id)
+
+            current_password = request.POST.get('current_password')
+            new_password = request.POST.get('new_password')
+            confirm_password = request.POST.get('confirm_password')
+
+
+            # check current password
+            if not check_password(current_password, user.user_password):
+                messages.error(request, 'Current password is incorrect!')
+
+            elif new_password != confirm_password:
+                messages.error(request, 'New password do not match!')
+
+            
+            else:
+                user.user_password = make_password(new_password)
+                user.save()
+                messages.success(request, 'Password changed successfully!')
+
+        except User.DoesNotExist:
+            messages.error(request, 'User not found!')
+    
+    return redirect('profile')
+        
+
+def change_avatar(request):
+    """Change user profile picture"""
+    
+    if request.method == 'POST':
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return redirect('login')
+        
+        try:
+            user = User.objects.get(id=user_id)
+            
+            # Check if file was uploaded
+            if 'user_avatar' not in request.FILES:
+                messages.error(request, 'Please select a file to upload.')
+                return redirect('profile')
+            
+            avatar_file = request.FILES['user_avatar']
+            
+            # Validate file type
+            allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif']
+            if avatar_file.content_type not in allowed_types:
+                messages.error(request, 'Please upload a valid image file (JPG, PNG, GIF)')
+                return redirect('profile')
+            
+            # Validate file size (max 2MB)
+            if avatar_file.size > 2 * 1024 * 1024:
+                messages.error(request, 'Image size should be less than 2MB')
+                return redirect('profile')
+            
+            # Delete old avatar if exists
+            if user.user_avatar:
+                try:
+                    # Check if file exists before deleting
+                    if user.user_avatar.path and os.path.isfile(user.user_avatar.path):
+                        os.remove(user.user_avatar.path)
+                except:
+                    pass  # If file doesn't exist, continue
+            
+            # Save new avatar
+            user.user_avatar = avatar_file
+            user.save()
+            
+            messages.success(request, 'Profile picture updated successfully!')
+            
+        except User.DoesNotExist:
+            messages.error(request, 'User not found!')
+        except Exception as e:
+            messages.error(request, f'Error uploading image: {str(e)}')
+    
+    return redirect('profile')
+
+
+def update_preferences(request):
+    """Update user preferences"""
+    
+    if request.method == 'POST':
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return redirect('login')
+        
+        try:
+            user = User.objects.get(id=user_id)
+            
+            user.preferred_currency = request.POST.get('preferred_currency', 'INR')
+            user.preferred_language = request.POST.get('preferred_language', 'en')
+            user.auto_confirm_bookings = request.POST.get('auto_confirm_bookings') == 'on'
+            user.save_payment_methods = request.POST.get('save_payment_methods') == 'on'
+            user.save()
+            
+            messages.success(request, 'Preferences updated successfully!')
+            
+        except User.DoesNotExist:
+            messages.error(request, 'User not found!')
+    
+    return redirect('profile')
+
+
+def update_notifications(request):
+    """Update notification settings"""
+    
+    if request.method == 'POST':
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return redirect('login')
+        
+        try:
+            user = User.objects.get(id=user_id)
+            
+            user.email_notifications = request.POST.get('email_notifications') == 'on'
+            user.sms_notifications = request.POST.get('sms_notifications') == 'on'
+            user.promo_emails = request.POST.get('promo_emails') == 'on'
+            user.booking_reminders = request.POST.get('booking_reminders') == 'on'
+            user.save()
+            
+            messages.success(request, 'Notification settings updated successfully!')
+            
+        except User.DoesNotExist:
+            messages.error(request, 'User not found!')
+    
+    return redirect('profile')

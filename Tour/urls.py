@@ -44,6 +44,21 @@ urlpatterns = [
 
     # url for only hotels
     path('show_hotel/', views.show_hotel, name="hotel"),
+    #whish list
+    path('add-to-cart/<int:id>/', views.add_to_cart, name='add_to_cart'),
+    path('add-hotel-cart/<int:id>/', views.add_hotel_cart, name='add_hotel_cart'),
+    path('remove-package/<int:id>/', views.remove_package_cart, name='remove_package_cart'),
+    path('remove-hotel/<int:id>/', views.remove_hotel_cart, name='remove_hotel_cart'),
+    path('cart/', views.cart_details, name='cart_details'),
+    path('foot/', views.foot, name='foot'),
+
+
+    path('show_profile/', views.my_Profile, name='profile'),
+    path('profile/update/', views.update_profile, name='update_profile'),
+    path('profile/change-password/', views.change_password, name='change_password'),
+    path('profile/change-avatar/', views.change_avatar, name='change_avatar'),
+    path('profile/update-preferences/', views.update_preferences, name='update_preferences'),
+    path('profile/update-notifications/', views.update_notifications, name='update_notifications'),
 ]
 
 

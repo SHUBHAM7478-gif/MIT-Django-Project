@@ -7,6 +7,19 @@
 
 <div class="container py-5">
     
+    <!-- Messages Display -->
+    {% if messages %}
+        <div class="messages-container mb-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
     <!-- Page Header -->
     <div class="profile-header mb-5 fade-in-up">
         <div class="row align-items-center">
@@ -49,8 +62,8 @@
                 <!-- Profile Avatar Section -->
                 <div class="profile-avatar-section text-center py-4">
                     <div class="avatar-wrapper position-relative d-inline-block">
-                        {% if user_profile.avatar %}
-                            <img src="{{ user_profile.avatar.url }}" alt="{{ user_name }}" class="profile-avatar rounded-circle">
+                        {% if user.user_avatar and user.user_avatar.url %}
+                            <img src="{{ user.user_avatar.url }}" alt="{{ user.user_name }}" class="profile-avatar rounded-circle" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid white;">
                         {% else %}
                             <div class="default-avatar rounded-circle">
                                 <i class="fas fa-user-circle fa-5x"></i>
@@ -60,13 +73,14 @@
                             <i class="fas fa-camera"></i>
                         </button>
                     </div>
-                    <h4 class="mt-3 mb-1 fw-bold">{{ user_name }}</h4>
-                    <p class="text-muted mb-2">
-                        <i class="fas fa-envelope me-1"></i> {{ user_email|default:"user@example.com" }}
+
+                    <h4 class="mt-3 mb-1 fw-bold">{{ user.user_name }}</h4>
+                    <p class="text-white-50 mb-2">
+                        <i class="fas fa-envelope me-1"></i> {{ user.user_email }}
                     </p>
-                    {% if user_phone %}
-                        <p class="text-muted small mb-0">
-                            <i class="fas fa-phone me-1"></i> {{ user_phone }}
+                    {% if user.user_phone %}
+                        <p class="text-white-50 small mb-0">
+                            <i class="fas fa-phone me-1"></i> {{ user.user_phone }}
                         </p>
                     {% endif %}
                     <div class="mt-3">
@@ -91,9 +105,6 @@
                         <button class="nav-link" data-bs-toggle="pill" data-bs-target="#preferences" type="button" role="tab">
                             <i class="fas fa-sliders-h me-2"></i> Preferences
                         </button>
-                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#payment-methods" type="button" role="tab">
-                            <i class="fas fa-credit-card me-2"></i> Payment Methods
-                        </button>
                         <button class="nav-link" data-bs-toggle="pill" data-bs-target="#notifications" type="button" role="tab">
                             <i class="fas fa-bell me-2"></i> Notifications
                         </button>
@@ -112,7 +123,7 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <small class="text-muted">Loyalty Points</small>
-                        <strong class="text-warning">{{ loyalty_points|default:"0" }} pts</strong>
+                        <strong class="text-warning">{{ user.loyalty_points|default:"0" }} pts</strong>
                     </div>
                 </div>
             </div>
@@ -129,7 +140,7 @@
                         <div class="card-body p-4">
                             <div class="welcome-card text-center">
                                 <i class="fas fa-smile-wink fa-3x text-warning mb-3"></i>
-                                <h3 class="fw-bold mb-2">Welcome back, {{ user_name }}!</h3>
+                                <h3 class="fw-bold mb-2">Welcome back, {{ user.user_name }}!</h3>
                                 <p class="text-muted">Here's what's happening with your travel account today.</p>
                             </div>
                         </div>
@@ -180,20 +191,48 @@
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-white py-3">
                             <h5 class="mb-0 fw-bold">
-                                <i class="fas fa-history me-2 text-primary"></i>Recent Activity
+                                <i class="fas fa-history me-2 text-primary"></i>Recent Bookings
                             </h5>
                         </div>
                         <div class="card-body p-0">
-                            {% if recent_activities %}
+                            {% if recent_bookings %}
                                 <div class="list-group list-group-flush">
-                                    {% for activity in recent_activities %}
+                                    {% for booking in recent_bookings %}
                                         <div class="list-group-item d-flex align-items-center">
                                             <div class="activity-icon me-3">
-                                                <i class="fas {{ activity.icon }} fa-lg"></i>
+                                                {% if booking.package %}
+                                                    <i class="fas fa-box fa-lg text-success"></i>
+                                                {% else %}
+                                                    <i class="fas fa-hotel fa-lg text-info"></i>
+                                                {% endif %}
                                             </div>
                                             <div class="flex-grow-1">
-                                                <p class="mb-0">{{ activity.description }}</p>
-                                                <small class="text-muted">{{ activity.date }}</small>
+                                                <p class="mb-0">
+                                                    <strong>
+                                                        {% if booking.package %}
+                                                            {{ booking.package.package_name }}
+                                                        {% else %}
+                                                            {{ booking.hotel.hotel_name }}
+                                                        {% endif %}
+                                                    </strong>
+                                                </p>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-calendar me-1"></i> 
+                                                    {{ booking.check_in|date:"M d, Y" }} to {{ booking.check_out|date:"M d, Y" }}
+                                                    | <i class="fas fa-users me-1"></i> {{ booking.guests }} guests
+                                                    | ₹{{ booking.total_price }}
+                                                </small>
+                                            </div>
+                                            <div class="ms-3">
+                                                <span class="badge {% if booking.check_out < today %}bg-secondary{% elif booking.check_in <= today and booking.check_out >= today %}bg-success{% else %}bg-primary{% endif %}">
+                                                    {% if booking.check_out < today %}
+                                                        Completed
+                                                    {% elif booking.check_in <= today and booking.check_out >= today %}
+                                                        Active
+                                                    {% else %}
+                                                        Upcoming
+                                                    {% endif %}
+                                                </span>
                                             </div>
                                         </div>
                                     {% endfor %}
@@ -201,7 +240,10 @@
                             {% else %}
                                 <div class="text-center py-5">
                                     <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                                    <p class="text-muted">No recent activities to display</p>
+                                    <p class="text-muted">No bookings yet</p>
+                                    <a href="{% url 'travels' %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-search me-1"></i>Start Exploring
+                                    </a>
                                 </div>
                             {% endif %}
                         </div>
@@ -217,55 +259,57 @@
                             </h5>
                         </div>
                         <div class="card-body p-4">
-                            <form method="POST" action="#" id="profileForm">
+                            <form method="POST" action="{% url 'update_profile' %}">
                                 {% csrf_token %}
                                 <div class="row g-3">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <label class="form-label fw-semibold">
                                             <i class="fas fa-user me-1"></i>Full Name
                                         </label>
-                                        <input type="text" class="form-control" name="full_name" value="{{ user_name }}" required>
+                                        <input type="text" class="form-control" name="user_name" value="{{ user.user_name }}" required>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <label class="form-label fw-semibold">
                                             <i class="fas fa-envelope me-1"></i>Email Address
                                         </label>
-                                        <input type="email" class="form-control" name="email" value="{{ user_email }}" required>
+                                        <input type="email" class="form-control" name="user_email" value="{{ user.user_email }}" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold">
                                             <i class="fas fa-phone me-1"></i>Phone Number
                                         </label>
-                                        <input type="tel" class="form-control" name="phone" value="{{ user_phone }}">
+                                        <input type="tel" class="form-control" name="user_phone" value="{{ user.user_phone|default:'' }}">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold">
                                             <i class="fas fa-calendar me-1"></i>Date of Birth
                                         </label>
-                                        <input type="date" class="form-control" name="dob" value="{{ user_dob }}">
+                                        <input type="date" class="form-control" name="user_dob" value="{{ user.user_dob|date:'Y-m-d' }}">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label fw-semibold">
                                             <i class="fas fa-map-marker-alt me-1"></i>Address
                                         </label>
-                                        <textarea class="form-control" name="address" rows="3">{{ user_address }}</textarea>
+                                        <textarea class="form-control" name="user_address" rows="3">{{ user.user_address|default:'' }}</textarea>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold">
                                             <i class="fas fa-city me-1"></i>City
                                         </label>
-                                        <input type="text" class="form-control" name="city" value="{{ user_city }}">
+                                        <input type="text" class="form-control" name="user_city" value="{{ user.user_city|default:'' }}">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold">
                                             <i class="fas fa-globe me-1"></i>Country
                                         </label>
-                                        <select class="form-select" name="country">
-                                            <option value="India" {% if user_country == "India" %}selected{% endif %}>India</option>
-                                            <option value="USA" {% if user_country == "USA" %}selected{% endif %}>USA</option>
-                                            <option value="UK" {% if user_country == "UK" %}selected{% endif %}>UK</option>
-                                            <option value="Canada" {% if user_country == "Canada" %}selected{% endif %}>Canada</option>
-                                            <option value="Australia" {% if user_country == "Australia" %}selected{% endif %}>Australia</option>
+                                        <select class="form-select" name="user_country">
+                                            <option value="India" {% if user.user_country == "India" %}selected{% endif %}>India</option>
+                                            <option value="USA" {% if user.user_country == "USA" %}selected{% endif %}>USA</option>
+                                            <option value="UK" {% if user.user_country == "UK" %}selected{% endif %}>UK</option>
+                                            <option value="Canada" {% if user.user_country == "Canada" %}selected{% endif %}>Canada</option>
+                                            <option value="Australia" {% if user.user_country == "Australia" %}selected{% endif %}>Australia</option>
+                                            <option value="UAE" {% if user.user_country == "UAE" %}selected{% endif %}>UAE</option>
+                                            <option value="Singapore" {% if user.user_country == "Singapore" %}selected{% endif %}>Singapore</option>
                                         </select>
                                     </div>
                                 </div>
@@ -291,7 +335,7 @@
                             </h5>
                         </div>
                         <div class="card-body p-4">
-                            <form method="POST" action="#">
+                            <form method="POST" action="{% url 'change_password' %}">
                                 {% csrf_token %}
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Current Password</label>
@@ -318,8 +362,8 @@
                                 <i class="fas fa-info-circle me-2"></i>
                                 Enhance your account security by enabling two-factor authentication.
                             </div>
-                            <button class="btn btn-outline-primary">
-                                <i class="fas fa-mobile-alt me-2"></i>Enable 2FA
+                            <button class="btn btn-outline-primary" disabled>
+                                <i class="fas fa-mobile-alt me-2"></i>Coming Soon
                             </button>
                         </div>
                     </div>
@@ -334,40 +378,40 @@
                             </h5>
                         </div>
                         <div class="card-body p-4">
-                            <form method="POST" action="#">
+                            <form method="POST" action="{% url 'update_preferences' %}">
                                 {% csrf_token %}
                                 <h6 class="fw-bold mb-3">Travel Preferences</h6>
                                 <div class="mb-3">
                                     <label class="form-label">Preferred Currency</label>
-                                    <select class="form-select" name="currency">
-                                        <option value="INR" {% if user_currency == "INR" %}selected{% endif %}>Indian Rupee (₹)</option>
-                                        <option value="USD" {% if user_currency == "USD" %}selected{% endif %}>US Dollar ($)</option>
-                                        <option value="EUR" {% if user_currency == "EUR" %}selected{% endif %}>Euro (€)</option>
-                                        <option value="GBP" {% if user_currency == "GBP" %}selected{% endif %}>British Pound (£)</option>
+                                    <select class="form-select" name="preferred_currency">
+                                        <option value="INR" {% if user.preferred_currency == "INR" %}selected{% endif %}>Indian Rupee (₹)</option>
+                                        <option value="USD" {% if user.preferred_currency == "USD" %}selected{% endif %}>US Dollar ($)</option>
+                                        <option value="EUR" {% if user.preferred_currency == "EUR" %}selected{% endif %}>Euro (€)</option>
+                                        <option value="GBP" {% if user.preferred_currency == "GBP" %}selected{% endif %}>British Pound (£)</option>
                                     </select>
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label class="form-label">Preferred Language</label>
-                                    <select class="form-select" name="language">
-                                        <option value="en" {% if user_language == "en" %}selected{% endif %}>English</option>
-                                        <option value="hi" {% if user_language == "hi" %}selected{% endif %}>Hindi</option>
-                                        <option value="es" {% if user_language == "es" %}selected{% endif %}>Spanish</option>
-                                        <option value="fr" {% if user_language == "fr" %}selected{% endif %}>French</option>
+                                    <select class="form-select" name="preferred_language">
+                                        <option value="en" {% if user.preferred_language == "en" %}selected{% endif %}>English</option>
+                                        <option value="hi" {% if user.preferred_language == "hi" %}selected{% endif %}>Hindi</option>
+                                        <option value="es" {% if user.preferred_language == "es" %}selected{% endif %}>Spanish</option>
+                                        <option value="fr" {% if user.preferred_language == "fr" %}selected{% endif %}>French</option>
                                     </select>
                                 </div>
                                 
                                 <h6 class="fw-bold mb-3 mt-4">Booking Preferences</h6>
                                 <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="autoConfirm" name="auto_confirm" {% if auto_confirm %}checked{% endif %}>
+                                    <input class="form-check-input" type="checkbox" id="autoConfirm" name="auto_confirm_bookings" {% if user.auto_confirm_bookings %}checked{% endif %}>
                                     <label class="form-check-label" for="autoConfirm">
                                         Automatically confirm bookings
                                     </label>
                                 </div>
                                 <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="saveCards" name="save_cards" {% if save_cards %}checked{% endif %}>
+                                    <input class="form-check-input" type="checkbox" id="saveCards" name="save_payment_methods" {% if user.save_payment_methods %}checked{% endif %}>
                                     <label class="form-check-label" for="saveCards">
-                                        Save payment methods for future bookings
+                                        Save preferences for future bookings
                                     </label>
                                 </div>
                                 
@@ -375,53 +419,6 @@
                                     <i class="fas fa-save me-2"></i>Save Preferences
                                 </button>
                             </form>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Payment Methods Tab -->
-                <div class="tab-pane fade" id="payment-methods" role="tabpanel">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0 fw-bold">
-                                <i class="fas fa-credit-card me-2 text-primary"></i>Payment Methods
-                            </h5>
-                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addCardModal">
-                                <i class="fas fa-plus me-1"></i>Add Card
-                            </button>
-                        </div>
-                        <div class="card-body p-4">
-                            {% if payment_methods %}
-                                {% for payment in payment_methods %}
-                                    <div class="payment-card mb-3 p-3 border rounded-3">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="d-flex align-items-center gap-3">
-                                                <i class="fab fa-cc-{{ payment.card_type }} fa-2x"></i>
-                                                <div>
-                                                    <strong>•••• •••• •••• {{ payment.last_four }}</strong>
-                                                    <p class="mb-0 small text-muted">Expires {{ payment.expiry }}</p>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                {% if payment.is_default %}
-                                                    <span class="badge bg-success">Default</span>
-                                                {% endif %}
-                                                <button class="btn btn-sm btn-outline-danger ms-2">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            {% else %}
-                                <div class="text-center py-5">
-                                    <i class="fas fa-credit-card fa-3x text-muted mb-3"></i>
-                                    <p class="text-muted">No payment methods added yet</p>
-                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCardModal">
-                                        <i class="fas fa-plus me-2"></i>Add Your First Card
-                                    </button>
-                                </div>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -435,10 +432,10 @@
                             </h5>
                         </div>
                         <div class="card-body p-4">
-                            <form method="POST" action="#">
+                            <form method="POST" action="{% url 'update_notifications' %}">
                                 {% csrf_token %}
                                 <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" id="emailNotifications" name="email_notifications" {% if email_notifications %}checked{% endif %}>
+                                    <input class="form-check-input" type="checkbox" id="emailNotifications" name="email_notifications" {% if user.email_notifications %}checked{% endif %}>
                                     <label class="form-check-label fw-semibold" for="emailNotifications">
                                         Email Notifications
                                     </label>
@@ -446,7 +443,7 @@
                                 </div>
                                 
                                 <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" id="smsNotifications" name="sms_notifications" {% if sms_notifications %}checked{% endif %}>
+                                    <input class="form-check-input" type="checkbox" id="smsNotifications" name="sms_notifications" {% if user.sms_notifications %}checked{% endif %}>
                                     <label class="form-check-label fw-semibold" for="smsNotifications">
                                         SMS Notifications
                                     </label>
@@ -454,7 +451,7 @@
                                 </div>
                                 
                                 <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" id="promoEmails" name="promo_emails" {% if promo_emails %}checked{% endif %}>
+                                    <input class="form-check-input" type="checkbox" id="promoEmails" name="promo_emails" {% if user.promo_emails %}checked{% endif %}>
                                     <label class="form-check-label fw-semibold" for="promoEmails">
                                         Promotional Emails
                                     </label>
@@ -462,7 +459,7 @@
                                 </div>
                                 
                                 <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" id="bookingReminders" name="booking_reminders" {% if booking_reminders %}checked{% endif %}>
+                                    <input class="form-check-input" type="checkbox" id="bookingReminders" name="booking_reminders" {% if user.booking_reminders %}checked{% endif %}>
                                     <label class="form-check-label fw-semibold" for="bookingReminders">
                                         Booking Reminders
                                     </label>
@@ -491,58 +488,25 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="#" enctype="multipart/form-data">
+                <form method="POST" action="{% url 'change_avatar' %}" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="text-center mb-3">
-                        <div class="avatar-preview mb-3">
-                            <i class="fas fa-user-circle fa-5x text-muted"></i>
-                        </div>
-                        <input type="file" class="form-control" name="avatar" accept="image/*">
-                        <small class="text-muted">Recommended: Square image, max 2MB</small>
+                        {% if user.user_avatar and user.user_avatar.url %}
+                            <img src="{{ user.user_avatar.url }}" alt="{{ user.user_name }}" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #1a5d7f;">
+                        {% else %}
+                            <div class="avatar-preview mb-3">
+                                <i class="fas fa-user-circle fa-5x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <input type="file" class="form-control" name="user_avatar" accept="image/jpeg,image/png,image/jpg,image/gif" required>
+                        <small class="text-muted mt-2 d-block">
+                            <i class="fas fa-info-circle me-1"></i> 
+                            Recommended: Square image, max 2MB (JPG, PNG, GIF)
+                        </small>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Upload Photo</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Add Card Modal -->
-<div class="modal fade" id="addCardModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add Payment Method</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" action="#">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label class="form-label">Card Number</label>
-                        <input type="text" class="form-control" placeholder="1234 5678 9012 3456" required>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Expiry Date</label>
-                            <input type="text" class="form-control" placeholder="MM/YY" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">CVV</label>
-                            <input type="password" class="form-control" placeholder="123" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Cardholder Name</label>
-                        <input type="text" class="form-control" placeholder="John Doe" required>
-                    </div>
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="setDefault">
-                        <label class="form-check-label" for="setDefault">
-                            Set as default payment method
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Add Card</button>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-upload me-2"></i>Upload Photo
+                    </button>
                 </form>
             </div>
         </div>
@@ -587,6 +551,7 @@
     justify-content: center;
     background: rgba(255, 255, 255, 0.2);
     margin: 0 auto;
+    border-radius: 50%;
 }
 
 .default-avatar i {
@@ -608,6 +573,7 @@
     justify-content: center;
     color: #1a5d7f;
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .btn-change-avatar:hover {
@@ -657,6 +623,20 @@
     }
 }
 
+/* Messages Container */
+.messages-container .alert {
+    border-radius: 12px;
+    border-left: 4px solid;
+}
+
+.alert-success {
+    border-left-color: #28a745;
+}
+
+.alert-error {
+    border-left-color: #dc3545;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .profile-sidebar {
@@ -687,14 +667,49 @@
     border-color: #1a5d7f;
 }
 
-.payment-card {
+.list-group-item {
     transition: all 0.3s ease;
 }
 
-.payment-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Modal Styles */
+.modal-content {
+    border-radius: 20px;
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid #e2e8f0;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-radius: 20px 20px 0 0;
+}
+
+.btn-close:focus {
+    box-shadow: none;
 }
 </style>
+
+<script>
+// Initialize Bootstrap components
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+    
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+</script>
 
 {% endblock %}
