@@ -66,8 +66,9 @@ urlpatterns = [
         views.download_booking_bill,
         name='download_booking_bill'
     ),
-    path('success/<int:id>', views.payment_page, name='success'),
-    path('pay/<int:id>/', views.pay, name='pay'),
+    path('payment/<int:id>/', views.payment_page, name='payment'),
+    path('success/', views.succes, name='success'),
+    
 
 ]
 

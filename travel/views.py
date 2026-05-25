@@ -158,7 +158,7 @@ def book_hotel(request, id):
 
         total_price = (days * hotel.price_per_night)*guests
 
-        Booking.objects.create(
+        booking =Booking.objects.create(
             user_id=user_id,
             name=h_name,
             email=h_email,
@@ -174,7 +174,7 @@ def book_hotel(request, id):
         hotel.room_availability -= 1
         hotel.save()
 
-        return redirect('/s/')
+        return redirect('payment', id=booking.id)
 
     return render(request, 'hotel.html', {'hotel': hotel,'user_name': request.session.get('user_name')})
 
@@ -197,7 +197,7 @@ def package_booking(request, id):
 
         total_price = guests * package.package_price
 
-        Booking.objects.create(
+        booking=Booking.objects.create(
             user_id=user_id,              
             package=package,
             hotel=package.hotel_name,     
@@ -210,7 +210,7 @@ def package_booking(request, id):
             total_price=total_price
         )
 
-        return redirect(f'/pay/{id}/')
+        return redirect('payment', id=booking.id)
 
     return render(request, 'package.html', {'package': package, 'user_name': request.session.get('user_name')})
 
@@ -748,11 +748,15 @@ def download_booking_bill(request, booking_id):
     return response
 
 def payment_page(request, id):
-    amount = Booking.objects.get(id=id)
-    amount_rupees = amount.price
-    amount_paisa = amount_rupees * 100  # convert to Paisa
-    
-    client = razorpay.Client(auth = (settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+    booking = get_object_or_404(Booking, id=id)
+
+    amount_rupees = booking.total_price
+    amount_paisa = int(amount_rupees * 100)
+
+    client = razorpay.Client(
+        auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+    )
 
     payment = client.order.create({
         "amount": amount_paisa,
@@ -764,28 +768,8 @@ def payment_page(request, id):
         "payment": payment,
         "razorpay_key": settings.RAZORPAY_KEY_ID,
         "amount": amount_rupees,
-        "name": amount.name
+        "booking": booking,
+        "name": booking.name
     }
 
     return render(request, "payment.html", context)
-def pay(request,id):
-    amount = Booking.objects.get(id=id)
-    package = Package.objects.get(id=id)
-    amount_rupees = amount.price
-    amount_paisa = amount_rupees * 100  # convert to Paisa
-    
-    client = razorpay.Client(auth = (settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-
-    payment = client.order.create({
-        "amount": amount_paisa,
-        "currency": "INR",
-        "payment_capture": 1
-    })
-
-    context = {
-        "payment": payment,
-        "razorpay_key": settings.RAZORPAY_KEY_ID,
-        "amount": amount_rupees,
-        "name": amount.name
-    }
-    return render(request, "payment.html",context)
