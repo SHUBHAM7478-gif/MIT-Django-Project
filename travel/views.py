@@ -188,6 +188,11 @@ def package_booking(request, id):
     user_id = request.session.get('user_id')
 
     if request.method == "POST":
+        payment_method = request.POST.get("payment_method")
+
+        if not payment_method:
+            messages.error(request, "Please select payment method")
+            return redirect(request.path)
         name = request.POST.get('name')
         email = request.POST.get('email')
         address = request.POST.get('address')
@@ -207,10 +212,20 @@ def package_booking(request, id):
             check_in=check_in if check_in else None,
             check_out=check_out if check_out else None,
             guests=guests,
+              payment_method=payment_method,
             total_price=total_price
         )
 
-        return redirect('payment', id=booking.id)
+         # CASH PAYMENT
+        if payment_method == "cash":
+
+            return redirect('s')
+
+        # ONLINE PAYMENT
+        elif payment_method == "online":
+
+            return redirect('payment', booking.id)
+
 
     return render(request, 'package.html', {'package': package, 'user_name': request.session.get('user_name')})
 
@@ -769,7 +784,8 @@ def payment_page(request, id):
         "razorpay_key": settings.RAZORPAY_KEY_ID,
         "amount": amount_rupees,
         "booking": booking,
-        "name": booking.name
+        "name": booking.name,
+        "pac":booking.package
     }
 
     return render(request, "payment.html", context)
