@@ -236,6 +236,7 @@ select.premium-input{
                 <div class="hotel-note">
                     <strong>Note:</strong> Your hotel booking will be saved and shown inside My Bookings after confirmation.
                 </div>
+                <!-- PAYMENT SECTION -->
                 <div class="booking-divider">
                     <span>💳</span>
                 </div>
@@ -253,10 +254,15 @@ select.premium-input{
 
                     <select name="payment_method" class="form-control premium-input" required>
                         <option value="">-- Choose Payment Method --</option>
-                        <option value="upi">UPI (Google Pay / PhonePe)</option>
-                        <option value="card">Debit / Credit Card</option>
-                        <option value="netbanking">Net Banking</option>
-                        <option value="cash">Cash on Arrival</option>
+
+                        <option value="online">
+                            Online Payment (Razorpay)
+                        </option>
+
+                        <option value="cash">
+                            Cash on Arrival
+                        </option>
+
                     </select>
 
                 </div>

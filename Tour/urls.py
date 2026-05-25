@@ -29,6 +29,7 @@ urlpatterns = [
     path('travels/', views.travels_page, name='travels'),
     path('search/', views.search_method, name='search'),
     path('logout/', views.logout_user, name='logout'),
+    path('s/', views.succes, name='s'),
 
 
 
@@ -51,6 +52,7 @@ urlpatterns = [
     path('remove-hotel/<int:id>/', views.remove_hotel_cart, name='remove_hotel_cart'),
     path('cart/', views.cart_details, name='cart_details'),
     path('foot/', views.foot, name='foot'),
+    path('con/', views.contact, name='contact'),
 
 
     path('show_profile/', views.my_Profile, name='profile'),
@@ -59,6 +61,14 @@ urlpatterns = [
     path('profile/change-avatar/', views.change_avatar, name='change_avatar'),
     path('profile/update-preferences/', views.update_preferences, name='update_preferences'),
     path('profile/update-notifications/', views.update_notifications, name='update_notifications'),
+    path(
+        'download-booking-bill/<int:booking_id>/',
+        views.download_booking_bill,
+        name='download_booking_bill'
+    ),
+    path('success/<int:id>', views.payment_page, name='success'),
+    path('pay/<int:id>/', views.pay, name='pay'),
+
 ]
 
 

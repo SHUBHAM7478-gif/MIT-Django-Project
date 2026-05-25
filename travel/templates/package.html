@@ -496,30 +496,36 @@ textarea.premium-input{
                         <p>Your booking details will be saved and shown inside My Bookings after confirmation.</p>
                     </div>
                 </div>
-                <div class="booking-divider">
-                    <span>💳</span>
-                </div>
+             <!-- PAYMENT SECTION -->
+            <div class="booking-divider">
+                <span>💳</span>
+            </div>
 
-                <h5 class="form-section-title">
-                    <span class="section-icon">
-                        <i class="fa fa-credit-card"></i>
-                    </span>
-                    Payment Option
-                </h5>
+            <h5 class="form-section-title">
+                <span class="section-icon">
+                    <i class="fa fa-credit-card"></i>
+                </span>
+                Payment Option
+            </h5>
 
-                <div class="mb-4">
+            <div class="mb-4">
 
-                    <label class="form-label">Select Payment Method</label>
+                <label class="form-label">Select Payment Method</label>
 
-                    <select name="payment_method" class="form-control premium-input" required>
-                        <option value="">-- Choose Payment Method --</option>
-                        <option value="upi">UPI (Google Pay / PhonePe)</option>
-                        <option value="card">Debit / Credit Card</option>
-                        <option value="netbanking">Net Banking</option>
-                        <option value="cash">Cash on Arrival</option>
-                    </select>
+                <select name="payment_method" class="form-control premium-input" required>
+                    <option value="">-- Choose Payment Method --</option>
 
-                </div>
+                    <option value="online">
+                        Online Payment (Razorpay)
+                    </option>
+
+                    <option value="cash">
+                        Cash on Arrival
+                    </option>
+
+                </select>
+
+</div>
 
                 <button class="btn confirm-btn">
                     <i class="fa fa-lock"></i>

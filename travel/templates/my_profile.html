@@ -69,9 +69,18 @@
                                 <i class="fas fa-user-circle fa-5x"></i>
                             </div>
                         {% endif %}
-                        <button class="btn-change-avatar" data-bs-toggle="modal" data-bs-target="#changeAvatarModal">
+                        <button type="button"
+                                class="btn-change-avatar"
+                                id="openAvatarBox">
                             <i class="fas fa-camera"></i>
                         </button>
+                        <!-- CAMERA BUTTON -->
+                           {% comment %} <button type="button"
+                                    class="btn-change-avatar"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#changeAvatarModal">
+                                <i class="fas fa-camera"></i>
+                            </button> {% endcomment %}
                     </div>
 
                     <h4 class="mt-3 mb-1 fw-bold">{{ user.user_name }}</h4>
@@ -90,27 +99,54 @@
                     </div>
                 </div>
                 
-                <!-- Navigation Tabs -->
-                <div class="profile-nav p-3">
-                    <div class="nav flex-column nav-pills" id="profileTab" role="tablist">
-                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#overview" type="button" role="tab">
-                            <i class="fas fa-chart-line me-2"></i> Overview
+              <!-- Modern Luxury Profile Navigation -->
+                <div class="profile-nav p-4">
+                    <div class="nav flex-column nav-pills custom-profile-nav" 
+                        id="profileTab" 
+                        role="tablist">
+
+                        <button class="nav-link active" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#overview" 
+                                type="button">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Overview</span>
                         </button>
-                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#personal-info" type="button" role="tab">
-                            <i class="fas fa-user-edit me-2"></i> Personal Information
+
+                        <button class="nav-link" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#personal-info" 
+                                type="button">
+                            <i class="fas fa-user-edit"></i>
+                            <span>Personal Information</span>
                         </button>
-                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#security" type="button" role="tab">
-                            <i class="fas fa-shield-alt me-2"></i> Security
+
+                        <button class="nav-link" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#security" 
+                                type="button">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Security</span>
                         </button>
-                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#preferences" type="button" role="tab">
-                            <i class="fas fa-sliders-h me-2"></i> Preferences
+
+                        <button class="nav-link" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#preferences" 
+                                type="button">
+                            <i class="fas fa-sliders-h"></i>
+                            <span>Preferences</span>
                         </button>
-                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#notifications" type="button" role="tab">
-                            <i class="fas fa-bell me-2"></i> Notifications
+
+                        <button class="nav-link" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#notifications" 
+                                type="button">
+                            <i class="fas fa-bell"></i>
+                            <span>Notifications</span>
                         </button>
+
                     </div>
                 </div>
-                
                 <!-- Quick Stats -->
                 <div class="profile-quick-stats p-3 border-top">
                     <div class="d-flex justify-content-between mb-2">
@@ -480,40 +516,255 @@
 </div>
 
 <!-- Change Avatar Modal -->
-<div class="modal fade" id="changeAvatarModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Change Profile Picture</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<div class="avatar-upload-popup" id="avatarUploadBox">
+
+    <!-- Close Button -->
+    <button type="button" class="close-popup" id="closeAvatarBox">
+        <i class="fas fa-times"></i>
+    </button>
+
+    <!-- Header -->
+    <div class="upload-top text-center">
+
+        {% if user.user_avatar and user.user_avatar.url %}
+            <img src="{{ user.user_avatar.url }}"
+                 class="upload-preview"
+                 alt="{{ user.user_name }}">
+        {% else %}
+            <div class="upload-preview default-preview">
+                <i class="fas fa-user"></i>
             </div>
-            <div class="modal-body">
-                <form method="POST" action="{% url 'change_avatar' %}" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="text-center mb-3">
-                        {% if user.user_avatar and user.user_avatar.url %}
-                            <img src="{{ user.user_avatar.url }}" alt="{{ user.user_name }}" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #1a5d7f;">
-                        {% else %}
-                            <div class="avatar-preview mb-3">
-                                <i class="fas fa-user-circle fa-5x text-muted"></i>
-                            </div>
-                        {% endif %}
-                        <input type="file" class="form-control" name="user_avatar" accept="image/jpeg,image/png,image/jpg,image/gif" required>
-                        <small class="text-muted mt-2 d-block">
-                            <i class="fas fa-info-circle me-1"></i> 
-                            Recommended: Square image, max 2MB (JPG, PNG, GIF)
-                        </small>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-upload me-2"></i>Upload Photo
-                    </button>
-                </form>
-            </div>
-        </div>
+        {% endif %}
+
+        <h4 class="fw-bold mt-3 mb-1">
+            Update Profile Photo
+        </h4>
+
+        <p class="text-muted small mb-0">
+            Upload a beautiful profile picture
+        </p>
+
     </div>
+
+    <!-- Form -->
+    <form method="POST"
+          action="{% url 'change_avatar' %}"
+          enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <!-- File Upload -->
+        <div class="custom-upload-area mt-4">
+
+            <input type="file"
+                   id="avatarInput"
+                   name="user_avatar"
+                   accept="image/jpeg,image/png,image/jpg,image/gif"
+                   required>
+
+            <label for="avatarInput" class="upload-box">
+
+                <i class="fas fa-cloud-upload-alt"></i>
+
+                <span>Choose Photo</span>
+
+                <small>
+                    JPG, PNG, GIF • Max 2MB
+                </small>
+
+            </label>
+
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-upload-photo">
+            <i class="fas fa-check-circle me-2"></i>
+            Upload Photo
+        </button>
+
+    </form>
+
 </div>
 
 <style>
+
+
+.avatar-upload-popup{
+    position:fixed;
+    top:120px;
+    left:50%;
+    transform:translateX(-50%) scale(.92);
+
+    width:360px;
+    padding:30px;
+
+    background:rgba(255,255,255,0.97);
+    backdrop-filter:blur(20px);
+
+    border-radius:28px;
+
+    border:1px solid rgba(255,255,255,0.5);
+
+    box-shadow:
+        0 25px 60px rgba(0,0,0,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:all .35s ease;
+
+    z-index:9999;
+}
+
+/* Show Popup */
+.avatar-upload-popup.show{
+    opacity:1;
+    visibility:visible;
+    transform:translateX(-50%) scale(1);
+}
+
+/* Close Button */
+.close-popup{
+    position:absolute;
+    top:15px;
+    right:15px;
+
+    width:36px;
+    height:36px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#f1f5f9;
+    color:#475569;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.close-popup:hover{
+    background:#e2e8f0;
+    transform:rotate(90deg);
+}
+
+/* Preview */
+.upload-preview{
+    width:110px;
+    height:110px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:4px solid #fff;
+
+    box-shadow:
+        0 12px 30px rgba(26,93,127,0.25);
+}
+
+.default-preview{
+    background:linear-gradient(135deg,#1a5d7f,#2d8bb8);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin:auto;
+
+    color:white;
+    font-size:42px;
+}
+
+/* Upload Area */
+.custom-upload-area input{
+    display:none;
+}
+
+.upload-box{
+    width:100%;
+    min-height:180px;
+
+    border:2px dashed #cbd5e1;
+    border-radius:22px;
+
+    background:#f8fafc;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+
+    transition:.3s ease;
+}
+
+.upload-box:hover{
+    border-color:#1a5d7f;
+    background:#eef7fb;
+    transform:translateY(-3px);
+}
+
+.upload-box i{
+    font-size:48px;
+    color:#1a5d7f;
+    margin-bottom:12px;
+}
+
+.upload-box span{
+    font-size:18px;
+    font-weight:700;
+    color:#0f172a;
+}
+
+.upload-box small{
+    margin-top:6px;
+    color:#64748b;
+}
+
+/* Upload Button */
+.btn-upload-photo{
+    width:100%;
+
+    margin-top:22px;
+
+    border:none;
+    border-radius:18px;
+
+    padding:15px;
+
+    font-size:16px;
+    font-weight:700;
+
+    color:white;
+
+    background:linear-gradient(135deg,#1a5d7f,#2d8bb8);
+
+    transition:.3s ease;
+}
+
+.btn-upload-photo:hover{
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 14px 28px rgba(26,93,127,0.3);
+}
+
+/* Mobile */
+@media(max-width:576px){
+
+    .avatar-upload-popup{
+        width:92%;
+        padding:24px;
+    }
+
+    .upload-box{
+        min-height:150px;
+    }
+
+}
 /* Profile Page Styles */
 .text-primary-gradient {
     background: linear-gradient(135deg, #1a5d7f 0%, #2d8bb8 100%);
@@ -526,7 +777,21 @@
     background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);
     color: white;
 }
+/* Ensure the page header handles dynamic layout safely */
+.profile-header {
+    position: relative;
+    width: 100%;
+}
 
+/* Ensure the stats card scales cleanly based on padding, not fixed widths */
+.profile-stats-card {
+    display: inline-block;
+    width: 100%;
+    max-width: 320px; /* Limits size on large monitors instead of breaking */
+    min-width: 200px;
+    box-sizing: border-box;
+    overflow: visible; /* Prevents "Member Since" text clipping */
+}
 .profile-header {
     background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
     padding: 2rem;
@@ -579,8 +844,133 @@
 .btn-change-avatar:hover {
     transform: scale(1.1);
 }
+/* Sidebar Container */
+.profile-nav{
+    background: rgba(15, 23, 42, 0.95);
+    border-radius: 24px;
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+}
 
-.profile-nav .nav-link {
+/* Navigation */
+.custom-profile-nav{
+    gap: 14px;
+}
+
+/* Nav Buttons */
+.custom-profile-nav .nav-link{
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 16px 20px;
+    border-radius: 18px;
+
+    background: rgba(255,255,255,0.03);
+    color: #cbd5e1;
+
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: .3px;
+
+    border: 1px solid transparent;
+
+    transition: all .35s ease;
+    overflow: hidden;
+}
+
+/* Hover Effect */
+.custom-profile-nav .nav-link:hover{
+    transform: translateX(6px);
+    background: linear-gradient(
+        135deg,
+        rgba(255,140,0,0.18),
+        rgba(255,215,0,0.10)
+    );
+
+    color: #ffffff;
+    border-color: rgba(255,215,0,0.25);
+
+    box-shadow:
+        0 8px 20px rgba(255,140,0,0.18);
+}
+
+/* Active Tab */
+.custom-profile-nav .nav-link.active{
+    background: linear-gradient(
+        135deg,
+        #ff9800,
+        #ffcc00
+    );
+
+    color: #111827;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 10px 25px rgba(255,152,0,0.35);
+}
+
+/* Icon Style */
+.custom-profile-nav .nav-link i{
+    width: 22px;
+    text-align: center;
+    font-size: 17px;
+
+    transition: transform .3s ease;
+}
+
+/* Icon Animation */
+.custom-profile-nav .nav-link:hover i{
+    transform: scale(1.15);
+}
+
+/* Active Icon */
+.custom-profile-nav .nav-link.active i{
+    transform: scale(1.1);
+}
+
+/* Glow Effect */
+.custom-profile-nav .nav-link::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.18),
+        transparent
+    );
+
+    transition: .6s;
+}
+
+.custom-profile-nav .nav-link:hover::before{
+    left: 100%;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px){
+
+    .profile-nav{
+        border-radius: 20px;
+    }
+
+    .custom-profile-nav .nav-link{
+        padding: 14px 16px;
+        font-size: 14px;
+    }
+
+}
+{% comment %} .profile-nav .nav-link {
     color: #495057;
     border-radius: 12px;
     padding: 12px 16px;
@@ -595,7 +985,7 @@
 .profile-nav .nav-link.active {
     background: linear-gradient(135deg, #1a5d7f 0%, #2d8bb8 100%);
     color: white;
-}
+} {% endcomment %}
 
 .stat-circle {
     width: 60px;
@@ -685,14 +1075,101 @@
     border-bottom: 1px solid #e2e8f0;
     background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
     border-radius: 20px 20px 0 0;
-}
+} 
 
 .btn-close:focus {
     box-shadow: none;
 }
-</style>
 
+</style>
+{% comment %} <script>
+const openBtn = document.getElementById("openAvatarBox");
+const uploadBox = document.getElementById("avatarUploadBox");
+
+openBtn.addEventListener("click", function(e){
+    e.stopPropagation();
+    uploadBox.classList.toggle("show");
+});
+
+document.addEventListener("click", function(e){
+
+    if(!uploadBox.contains(e.target) &&
+       !openBtn.contains(e.target)){
+
+        uploadBox.classList.remove("show");
+    }
+
+});
+</script> {% endcomment %}
 <script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const openBtn = document.getElementById("openAvatarBox");
+    const closeBtn = document.getElementById("closeAvatarBox");
+    const uploadBox = document.getElementById("avatarUploadBox");
+
+    // Open Popup
+    openBtn.addEventListener("click", function(e){
+
+        e.stopPropagation();
+
+        uploadBox.classList.toggle("show");
+
+    });
+
+    // Close Button
+    closeBtn.addEventListener("click", function(){
+
+        uploadBox.classList.remove("show");
+
+    });
+
+    // Outside Click Close
+    document.addEventListener("click", function(e){
+
+        if(
+            !uploadBox.contains(e.target) &&
+            !openBtn.contains(e.target)
+        ){
+            uploadBox.classList.remove("show");
+        }
+
+    });
+
+});
+</script>
+{% comment %} <script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const openBtn = document.getElementById("openAvatarBox");
+    const uploadBox = document.getElementById("avatarUploadBox");
+
+    if(openBtn && uploadBox){
+
+        openBtn.addEventListener("click", function(e){
+
+            e.stopPropagation();
+
+            uploadBox.classList.toggle("show");
+
+        });
+
+        document.addEventListener("click", function(e){
+
+            if(
+                !uploadBox.contains(e.target) &&
+                !openBtn.contains(e.target)
+            ){
+                uploadBox.classList.remove("show");
+            }
+
+        });
+
+    }
+
+});
+</script> {% endcomment %}
+ <script>
 // Initialize Bootstrap components
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all tooltips
@@ -710,6 +1187,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, 5000);
 });
-</script>
 
+
+
+</script> 
 {% endblock %}
+

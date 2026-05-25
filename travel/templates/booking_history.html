@@ -177,7 +177,8 @@
             <div class="row g-4" id="bookingsList">
                 {% for b in bookings %}
                 <!-- Calculate booking status based on dates -->
-                {% with today=now|date:"Y-m-d" check_in=b.check_in|date:"Y-m-d" check_out=b.check_out|date:"Y-m-d" %}
+               {% now "Y-m-d" as today %}
+               {% with check_in=b.check_in|date:"Y-m-d" check_out=b.check_out|date:"Y-m-d" %}
                 <div class="col-12 booking-item" 
                      data-type="{% if b.package %}package{% else %}hotel{% endif %}"
                      data-name="{% if b.package %}{{ b.package.package_name|lower }}{% else %}{{ b.hotel.hotel_name|lower }}{% endif %}"
@@ -191,7 +192,7 @@
                         {% else %}
                             upcoming
                         {% endif %}
-                     ">
+                    ">
                     
                     <div class="booking-card-modern" id="booking-card-{{ b.id }}">
                         <div class="row g-0">
@@ -232,21 +233,23 @@
                             <!-- Middle Section - Details -->
                             <div class="col-md-6 col-lg-7 booking-details">
                                 <!-- Status Badge - Updated Logic -->
-                                <div class="booking-status-wrapper mb-2">
-                                    {% if check_out < today %}
-                                        <span class="status-badge status-completed">
-                                            <i class="fas fa-check-double me-1"></i>Completed
-                                        </span>
-                                    {% elif check_in <= today and check_out >= today %}
-                                        <span class="status-badge status-active">
-                                            <i class="fas fa-play-circle me-1"></i>Active
-                                        </span>
-                                    {% else %}
-                                        <span class="status-badge status-upcoming">
-                                            <i class="fas fa-clock me-1"></i>Upcoming
-                                        </span>
-                                    {% endif %}
-                                </div>
+                                   <div class="booking-status-wrapper mb-2">
+                                        {% if check_out < today %}
+                                            <span class="status-badge status-completed">
+                                                <i class="fas fa-check-double me-1"></i>Completed
+                                            </span>
+
+                                        {% elif check_in <= today and check_out >= today %}
+                                            <span class="status-badge status-active">
+                                                <i class="fas fa-play-circle me-1"></i>Active
+                                            </span>
+
+                                        {% else %}
+                                            <span class="status-badge status-upcoming">
+                                                <i class="fas fa-clock me-1"></i>Upcoming
+                                            </span>
+                                        {% endif %}
+                                    </div>
                                 
                                 <div class="booking-header">
                                     <h3 class="booking-title">
@@ -336,10 +339,14 @@
                                         <i class="fas fa-eye"></i>
                                         <span>Details</span>
                                     </button>
-                                    <button class="btn-action btn-download-pdf" data-booking-id="{{ b.id }}">
+                                   <a href="{% url 'download_booking_bill' b.id %}"
+                                       {% comment %} target="_blank" {% endcomment %}
+                                        class="btn-action btn-download-pdf no-loader">
+
                                         <i class="fas fa-file-pdf"></i>
-                                        <span>PDF</span>
-                                    </button>
+                                        <span>Print Bill</span>
+
+                                    </a>
                                     <a href="/my-bookings/delete/{{ b.id }}" 
                                        class="btn-action btn-cancel"
                                        onclick="return confirm('Are you sure you want to cancel this booking? This action cannot be undone.')">
@@ -349,7 +356,7 @@
                                 </div>
                                 
                                 <div class="support-link mt-2">
-                                    <a href="#" class="text-decoration-none small">
+                                    <a href="{% url 'contact' %}" class="text-decoration-none small">
                                         <i class="fas fa-headset"></i> Need help?
                                     </a>
                                 </div>
@@ -441,7 +448,7 @@
                         </div>
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                        <a href="{% url "foot" %}?type=enquiry" class="btn btn-light btn-lg px-4">
+                        <a href="{% url 'contact' %}" class="btn btn-light btn-lg px-4">
                             <i class="fas fa-envelope me-2"></i>Contact Support
                         </a>
                     </div>
@@ -1096,10 +1103,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     
     // Individual PDF Download for each booking
-    const downloadButtons = document.querySelectorAll('.btn-download-pdf');
-    downloadButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
+    
             const bookingId = this.getAttribute('data-booking-id');
             const bookingCard = document.getElementById(`booking-card-${bookingId}`);
             
@@ -1151,7 +1155,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         });
-    });
+    
     
     // Export All Bookings as PDF
     if (exportAllPDFBtn) {
