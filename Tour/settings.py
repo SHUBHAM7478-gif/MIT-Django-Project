@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'travel',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +126,6 @@ STATICFILES_DIRS = [
 ]
 MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR, 'media')
+# RAZORPAY DETAILS
+RAZORPAY_KEY_ID = "rzp_live_SsRcP5xmJiqO7K"
+RAZORPAY_KEY_SECRET = "1sxZreEQDOvkde6KzaWVFyKc"

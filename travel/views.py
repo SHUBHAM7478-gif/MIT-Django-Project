@@ -1,11 +1,30 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from .models import *
+from datetime import datetime
+import os
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
 from datetime import datetime
 from django.utils import timezone
 from decimal import Decimal
 from django.contrib import messages
+from django.http import HttpResponse
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Table,
+    TableStyle
+)
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus.flowables import HRFlowable
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.styles import ParagraphStyle
+from .serializer import ProductSerializers 
+import razorpay
+from django.conf import settings
 
 
 def landing(request):
@@ -20,7 +39,8 @@ def landing(request):
     })
 
 
-
+def succes(request):
+    return render(request,'bookingsuccsfull.html')
 
 # for user registration
 
@@ -154,7 +174,7 @@ def book_hotel(request, id):
         hotel.room_availability -= 1
         hotel.save()
 
-        return redirect('/my-bookings')
+        return redirect('/s/')
 
     return render(request, 'hotel.html', {'hotel': hotel,'user_name': request.session.get('user_name')})
 
@@ -164,7 +184,6 @@ def package_booking(request, id):
 
     if not request.session.get('user_id'):
         return redirect(f'/login/?next=/package-book/{id}/')
-
     package = Package.objects.get(id=id)
     user_id = request.session.get('user_id')
 
@@ -191,7 +210,7 @@ def package_booking(request, id):
             total_price=total_price
         )
 
-        return redirect('/my-bookings')
+        return redirect(f'/pay/{id}/')
 
     return render(request, 'package.html', {'package': package, 'user_name': request.session.get('user_name')})
 
@@ -393,7 +412,8 @@ def foot(request):
     }
 
     return render(request, 'footerdetails.html', context)
-
+def contact(request):
+    return render(request,'contract.html',{'user_name': request.session.get('user_name')})
 
 def my_Profile(request):
      # Get the logged-in user (you need to store user_id in session)
@@ -510,55 +530,30 @@ def change_password(request):
     return redirect('profile')
         
 
+
 def change_avatar(request):
-    """Change user profile picture"""
-    
-    if request.method == 'POST':
+
+    if request.method == "POST":
+
         user_id = request.session.get('user_id')
+
         if not user_id:
+            messages.error(request, "Please login first!")
             return redirect('login')
-        
-        try:
-            user = User.objects.get(id=user_id)
-            
-            # Check if file was uploaded
-            if 'user_avatar' not in request.FILES:
-                messages.error(request, 'Please select a file to upload.')
-                return redirect('profile')
-            
-            avatar_file = request.FILES['user_avatar']
-            
-            # Validate file type
-            allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif']
-            if avatar_file.content_type not in allowed_types:
-                messages.error(request, 'Please upload a valid image file (JPG, PNG, GIF)')
-                return redirect('profile')
-            
-            # Validate file size (max 2MB)
-            if avatar_file.size > 2 * 1024 * 1024:
-                messages.error(request, 'Image size should be less than 2MB')
-                return redirect('profile')
-            
-            # Delete old avatar if exists
-            if user.user_avatar:
-                try:
-                    # Check if file exists before deleting
-                    if user.user_avatar.path and os.path.isfile(user.user_avatar.path):
-                        os.remove(user.user_avatar.path)
-                except:
-                    pass  # If file doesn't exist, continue
-            
-            # Save new avatar
-            user.user_avatar = avatar_file
+
+        user = User.objects.get(id=user_id)
+
+        image = request.FILES.get('user_avatar')
+
+        if image:
+            user.user_avatar = image
             user.save()
-            
-            messages.success(request, 'Profile picture updated successfully!')
-            
-        except User.DoesNotExist:
-            messages.error(request, 'User not found!')
-        except Exception as e:
-            messages.error(request, f'Error uploading image: {str(e)}')
-    
+
+            messages.success(request, "Profile picture updated successfully!")
+
+        else:
+            messages.error(request, "Please select an image!")
+
     return redirect('profile')
 
 
@@ -610,3 +605,187 @@ def update_notifications(request):
             messages.error(request, 'User not found!')
     
     return redirect('profile')
+
+
+def download_booking_bill(request, booking_id):
+
+    booking = Booking.objects.get(id=booking_id)
+
+    response = HttpResponse(content_type='application/pdf')
+    filename = f"booking_bill_{booking_id}_{datetime.now().timestamp()}.pdf"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    doc = SimpleDocTemplate(
+        response,
+        pagesize=A4,
+        rightMargin=40,
+        leftMargin=40,
+        topMargin=40,
+        bottomMargin=30
+    )
+
+    styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle(
+        'title_style',
+        parent=styles['Heading1'],
+        alignment=TA_CENTER,
+        fontSize=24,
+        textColor=colors.HexColor('#1a5d7f'),
+        spaceAfter=20
+    )
+
+    normal_style = styles['BodyText']
+
+    elements = []
+
+    # COMPANY TITLE
+    elements.append(
+        Paragraph("TripTravels", title_style)
+    )
+
+    elements.append(
+        Paragraph(
+            "Premium Travel Booking Invoice",
+            styles['Heading3']
+        )
+    )
+
+    elements.append(Spacer(1, 10))
+
+    elements.append(HRFlowable(width="100%"))
+
+    elements.append(Spacer(1, 20))
+
+    # BOOKING TYPE
+    booking_type = "Tour Package"
+
+    if booking.hotel:
+        booking_type = "Hotel Booking"
+
+    # BOOKING NAME
+    booking_name = ""
+
+    if booking.package:
+        booking_name = booking.package.package_name
+
+    if booking.hotel:
+        booking_name = booking.hotel.hotel_name
+
+    # TABLE DATA
+    data = [
+        ['Booking ID', f'#{booking.id}'],
+        ['Booking Type', booking_type],
+        ['Booking Name', booking_name],
+        ['Customer Name', booking.name],
+        ['Email', booking.email],
+        ['Guests', str(booking.guests)],
+        ['Check In', str(booking.check_in)],
+        ['Check Out', str(booking.check_out)],
+        # ['Payment Method', str(booking.payment_method).upper()],
+        ['Total Amount', f'₹ {booking.total_price}'],
+    ]
+
+    table = Table(data, colWidths=[180, 280])
+
+    table.setStyle(TableStyle([
+
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a5d7f')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+
+        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor("#649fc3")),
+
+        ('GRID', (0, 0), (-1, -1), 1, colors.lightgrey),
+
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+
+        ('FONTSIZE', (0, 0), (-1, -1), 11),
+
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+
+        ('TOPPADDING', (0, 0), (-1, -1), 10),
+
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+
+    ]))
+
+    elements.append(table)
+
+    elements.append(Spacer(1, 30))
+
+    # PAYMENT STATUS
+    elements.append(
+        Paragraph(
+            "<b>Payment Status:</b> Confirmed",
+            normal_style
+        )
+    )
+
+    elements.append(Spacer(1, 8))
+
+    elements.append(
+        Paragraph(
+            "Thank you for booking with TripTravels. We wish you a wonderful journey.",
+            normal_style
+        )
+    )
+
+    elements.append(Spacer(1, 25))
+
+    elements.append(HRFlowable(width="100%"))
+
+    elements.append(Spacer(1, 10))
+
+    elements.append(
+        Paragraph(
+            "Generated Automatically by TripTravels",
+            styles['Italic']
+        )
+    )
+
+    doc.build(elements)
+
+    return response
+
+def payment_page(request, id):
+    amount = Booking.objects.get(id=id)
+    amount_rupees = amount.price
+    amount_paisa = amount_rupees * 100  # convert to Paisa
+    
+    client = razorpay.Client(auth = (settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+    payment = client.order.create({
+        "amount": amount_paisa,
+        "currency": "INR",
+        "payment_capture": 1
+    })
+
+    context = {
+        "payment": payment,
+        "razorpay_key": settings.RAZORPAY_KEY_ID,
+        "amount": amount_rupees,
+        "name": amount.name
+    }
+
+    return render(request, "payment.html", context)
+def pay(request,id):
+    amount = Booking.objects.get(id=id)
+    package = Package.objects.get(id=id)
+    amount_rupees = amount.price
+    amount_paisa = amount_rupees * 100  # convert to Paisa
+    
+    client = razorpay.Client(auth = (settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+    payment = client.order.create({
+        "amount": amount_paisa,
+        "currency": "INR",
+        "payment_capture": 1
+    })
+
+    context = {
+        "payment": payment,
+        "razorpay_key": settings.RAZORPAY_KEY_ID,
+        "amount": amount_rupees,
+        "name": amount.name
+    }
+    return render(request, "payment.html",context)

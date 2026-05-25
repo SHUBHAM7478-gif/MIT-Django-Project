@@ -1,0 +1,16 @@
+<h3>Amount to Pay: ₹{{ amount }}</h3>
+
+<form action="{% url "pay" package.id %}" method="POST">
+    {% csrf_token %}
+
+    <script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        data-key="{{ razorpay_key }}"
+        data-amount="{{ payment.amount }}"
+        data-currency="INR"
+        data-order_id="{{ payment.id }}"
+        data-name="Your Company"
+        data-description="Payment for {{ name }}"
+        data-theme.color="#3399cc">
+    </script>
+</form>
