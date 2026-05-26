@@ -40,7 +40,8 @@ def landing(request):
 
 
 def succes(request):
-    return render(request,'bookingsuccsfull.html')
+    user_id = request.session.get('user_id')
+    return render(request,'bookingsuccsfull.html',{'user_name': request.session.get('user_name')})
 
 # for user registration
 
