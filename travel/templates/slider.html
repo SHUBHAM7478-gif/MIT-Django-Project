@@ -1,0 +1,302 @@
+{% load static %}
+
+<div id="modernSlider" class="carousel slide carousel-fade premium-hero" data-bs-ride="carousel" data-bs-interval="3000">
+
+    <div class="carousel-indicators premium-indicators">
+        <button type="button" data-bs-target="#modernSlider" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#modernSlider" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#modernSlider" data-bs-slide-to="2"></button>
+    </div>
+
+    <div class="carousel-inner">
+
+        <div class="carousel-item active">
+            <img src="{% static 'images/3rd.jpg' %}" class="d-block w-100 premium-hero-img">
+            <div class="premium-overlay"></div>
+
+            <div class="carousel-caption premium-caption">
+                <span class="hero-tag">Luxury Travel Experience</span>
+                <h1>Discover The World In Style</h1>
+                <p>Curated tour packages, premium hotels and unforgettable journeys crafted for modern travelers.</p>
+
+                <div class="hero-actions">
+                    <a href="{% url 'package' %}" class="btn hero-btn-main">Explore Packages</a>
+                    <a href="{% url 'hotel' %}" class="btn hero-btn-outline">Book Hotels</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="carousel-item">
+            <img src="{% static 'images/hotelna.jpg' %}" class="d-block w-100 premium-hero-img">
+            <div class="premium-overlay"></div>
+
+            <div class="carousel-caption premium-caption">
+                <span class="hero-tag">Handpicked Luxury Stays</span>
+                <h1>Stay Where Comfort Feels Royal</h1>
+                <p>Explore beautiful hotels with premium rooms, trusted service and peaceful travel comfort.</p>
+
+                <div class="hero-actions">
+                    <a href="{% url 'hotel' %}" class="btn hero-btn-main">Book Hotel</a>
+                    <a href="{% url 'package' %}" class="btn hero-btn-outline">View Packages</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="carousel-item">
+            <img src="{% static 'images/destination-4.jpg' %}" class="d-block w-100 premium-hero-img">
+            <div class="premium-overlay"></div>
+
+            <div class="carousel-caption premium-caption">
+                <span class="hero-tag">Adventure • Memories • Escape</span>
+                <h1>Your Next Journey Begins Here</h1>
+                <p>From beaches to mountains, plan your dream vacation with comfort, safety and style.</p>
+
+                <div class="hero-actions">
+                    <a href="{% url 'package' %}" class="btn hero-btn-main">Start Journey</a>
+                    <a href="#packages" class="btn hero-btn-outline">See Plans</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <button class="carousel-control-prev premium-arrow" type="button" data-bs-target="#modernSlider" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+
+    <button class="carousel-control-next premium-arrow" type="button" data-bs-target="#modernSlider" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+
+</div>
+
+<style>
+.premium-hero{
+    position:relative;
+    overflow:hidden;
+    border-radius:0 0 44px 44px;
+    box-shadow:0 32px 80px rgba(0,0,0,.35);
+    margin-bottom:70px;
+}
+
+.premium-hero::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    bottom:-80px;
+    width:70%;
+    height:120px;
+    transform:translateX(-50%);
+    background:rgba(245,182,66,.20);
+    filter:blur(70px);
+    z-index:0;
+}
+
+.premium-hero-img{
+    height:82vh;
+    object-fit:cover;
+    filter:brightness(.84) saturate(1.16) contrast(1.04);
+    transform:scale(1.03);
+}
+
+.carousel-item.active .premium-hero-img{
+    animation:heroZoom 4.2s ease forwards;
+}
+
+@keyframes heroZoom{
+    from{transform:scale(1);}
+    to{transform:scale(1.08);}
+}
+
+.premium-overlay{
+    position:absolute;
+    inset:0;
+    z-index:1;
+    background:
+        linear-gradient(180deg,rgba(5,10,18,.40) 0%,rgba(5,10,18,.05) 25%,rgba(5,10,18,.35) 100%),
+        radial-gradient(circle at 72% 28%,rgba(245,182,66,.24),transparent 28%),
+        linear-gradient(90deg,rgba(5,10,18,.90) 0%,rgba(5,10,18,.62) 42%,rgba(5,10,18,.12) 100%);
+}
+
+.premium-caption{
+    z-index:3;
+    top:55%;
+    bottom:auto;
+    transform:translateY(-50%);
+    left:8%;
+    right:auto;
+    text-align:left;
+    max-width:700px;
+    padding:0;
+}
+
+.carousel-item.active .premium-caption{
+    animation:captionUp .9s ease both;
+}
+
+@keyframes captionUp{
+    from{
+        opacity:0;
+        transform:translateY(-42%);
+    }
+    to{
+        opacity:1;
+        transform:translateY(-50%);
+    }
+}
+
+.hero-tag{
+    display:inline-block;
+    color:#f5b642;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(245,182,66,.48);
+    padding:9px 18px;
+    border-radius:50px;
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    backdrop-filter:blur(12px);
+    margin-bottom:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.18);
+}
+
+.premium-caption h1{
+    font-family:'Playfair Display',serif;
+    font-size:60px;
+    line-height:1.04;
+    font-weight:900;
+    color:#fff;
+    letter-spacing:-1.5px;
+    margin-bottom:18px;
+    text-shadow:0 16px 38px rgba(0,0,0,.55);
+}
+
+.premium-caption p{
+    font-size:18px;
+    line-height:1.7;
+    color:rgba(255,255,255,.88);
+    max-width:620px;
+    margin-bottom:26px;
+}
+
+.hero-actions{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+}
+
+.hero-actions .btn{
+    border-radius:50px;
+    padding:13px 30px;
+    font-weight:900;
+    letter-spacing:.3px;
+    position:relative;
+    overflow:hidden;
+}
+
+.hero-actions .btn::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-80%;
+    width:50%;
+    height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+    transform:skewX(-18deg);
+    transition:.55s ease;
+}
+
+.hero-actions .btn:hover::before{
+    left:130%;
+}
+
+.hero-btn-main{
+    background:linear-gradient(135deg,#f5b642,#ff8a00);
+    color:#111;
+    border:none;
+    box-shadow:0 15px 35px rgba(245,182,66,.38);
+}
+
+.hero-btn-outline{
+    color:#fff;
+    border:1px solid rgba(255,255,255,.65);
+    background:rgba(255,255,255,.08);
+    backdrop-filter:blur(12px);
+}
+
+.hero-btn-main:hover{
+    color:#111;
+    transform:translateY(-3px);
+}
+
+.hero-btn-outline:hover{
+    color:#111;
+    background:#fff;
+    transform:translateY(-3px);
+}
+
+.premium-arrow{
+    width:68px;
+    opacity:1;
+    z-index:5;
+}
+
+.premium-arrow .carousel-control-prev-icon,
+.premium-arrow .carousel-control-next-icon{
+    background-color:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.42);
+    border-radius:50%;
+    padding:22px;
+    backdrop-filter:blur(10px);
+}
+
+.premium-indicators{
+    z-index:6;
+    bottom:24px;
+}
+
+.premium-indicators button{
+    width:44px !important;
+    height:5px !important;
+    border-radius:50px !important;
+    border:none !important;
+    background:#fff !important;
+    opacity:.45;
+}
+
+.premium-indicators .active{
+    opacity:1;
+    background:#f5b642 !important;
+}
+
+@media(max-width:768px){
+    .premium-hero-img{
+        height:72vh;
+    }
+
+    .premium-caption{
+        top:57%;
+        left:6%;
+        right:6%;
+        text-align:center;
+        max-width:100%;
+    }
+
+    .premium-caption h1{
+        font-size:35px;
+    }
+
+    .premium-caption p{
+        font-size:15px;
+    }
+
+    .hero-actions{
+        justify-content:center;
+    }
+
+    .hero-actions .btn{
+        padding:11px 22px;
+    }
+}
+</style>

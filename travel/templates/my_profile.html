@@ -1,0 +1,1195 @@
+{% extends "bootstrap.html" %}
+
+{% block title %}My Profile - TripTravels{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="container py-5">
+    
+    <!-- Messages Display -->
+    {% if messages %}
+        <div class="messages-container mb-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <!-- Page Header -->
+    <div class="profile-header mb-5 fade-in-up">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="hero-badge mb-3">
+                    <span class="badge bg-accent-gradient px-4 py-2">
+                        <i class="fas fa-user-circle me-2"></i>Account Center
+                    </span>
+                </div>
+                <h1 class="display-4 fw-bold mb-3">
+                    My <span class="text-primary-gradient">Profile</span>
+                </h1>
+                <p class="lead text-muted mb-0">
+                    Manage your personal information, preferences, and account settings
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                <div class="profile-stats-card p-3 bg-white rounded-3 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Member Since</small>
+                            <h5 class="fw-bold mb-0">
+                                <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                                {{ member_since|default:"2024" }}
+                            </h5>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-award fa-2x text-primary opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Sidebar - Profile Navigation -->
+        <div class="col-lg-4 fade-in-up" style="animation-delay: 0.1s">
+            <div class="profile-sidebar card border-0 shadow-sm sticky-top" style="top: 100px;">
+                <!-- Profile Avatar Section -->
+                <div class="profile-avatar-section text-center py-4">
+                    <div class="avatar-wrapper position-relative d-inline-block">
+                        {% if user.user_avatar and user.user_avatar.url %}
+                            <img src="{{ user.user_avatar.url }}" alt="{{ user.user_name }}" class="profile-avatar rounded-circle" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid white;">
+                        {% else %}
+                            <div class="default-avatar rounded-circle">
+                                <i class="fas fa-user-circle fa-5x"></i>
+                            </div>
+                        {% endif %}
+                        <button type="button"
+                                class="btn-change-avatar"
+                                id="openAvatarBox">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <!-- CAMERA BUTTON -->
+                           {% comment %} <button type="button"
+                                    class="btn-change-avatar"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#changeAvatarModal">
+                                <i class="fas fa-camera"></i>
+                            </button> {% endcomment %}
+                    </div>
+
+                    <h4 class="mt-3 mb-1 fw-bold">{{ user.user_name }}</h4>
+                    <p class="text-white-50 mb-2">
+                        <i class="fas fa-envelope me-1"></i> {{ user.user_email }}
+                    </p>
+                    {% if user.user_phone %}
+                        <p class="text-white-50 small mb-0">
+                            <i class="fas fa-phone me-1"></i> {{ user.user_phone }}
+                        </p>
+                    {% endif %}
+                    <div class="mt-3">
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle me-1"></i> Verified Account
+                        </span>
+                    </div>
+                </div>
+                
+              <!-- Modern Luxury Profile Navigation -->
+                <div class="profile-nav p-4">
+                    <div class="nav flex-column nav-pills custom-profile-nav" 
+                        id="profileTab" 
+                        role="tablist">
+
+                        <button class="nav-link active" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#overview" 
+                                type="button">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Overview</span>
+                        </button>
+
+                        <button class="nav-link" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#personal-info" 
+                                type="button">
+                            <i class="fas fa-user-edit"></i>
+                            <span>Personal Information</span>
+                        </button>
+
+                        <button class="nav-link" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#security" 
+                                type="button">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Security</span>
+                        </button>
+
+                        <button class="nav-link" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#preferences" 
+                                type="button">
+                            <i class="fas fa-sliders-h"></i>
+                            <span>Preferences</span>
+                        </button>
+
+                        <button class="nav-link" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#notifications" 
+                                type="button">
+                            <i class="fas fa-bell"></i>
+                            <span>Notifications</span>
+                        </button>
+
+                    </div>
+                </div>
+                <!-- Quick Stats -->
+                <div class="profile-quick-stats p-3 border-top">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">Account Status</small>
+                        <span class="badge bg-success">Active</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">Total Bookings</small>
+                        <strong>{{ total_bookings|default:"0" }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted">Loyalty Points</small>
+                        <strong class="text-warning">{{ user.loyalty_points|default:"0" }} pts</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="col-lg-8 fade-in-up" style="animation-delay: 0.2s">
+            <div class="tab-content">
+                
+                <!-- Overview Tab -->
+                <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                    <!-- Welcome Card -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <div class="welcome-card text-center">
+                                <i class="fas fa-smile-wink fa-3x text-warning mb-3"></i>
+                                <h3 class="fw-bold mb-2">Welcome back, {{ user.user_name }}!</h3>
+                                <p class="text-muted">Here's what's happening with your travel account today.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Booking Summary -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-calendar-alt me-2 text-primary"></i>Booking Summary
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-4">
+                                <div class="col-md-3 col-6 text-center">
+                                    <div class="stat-circle bg-primary bg-opacity-10">
+                                        <i class="fas fa-suitcase fa-2x text-primary"></i>
+                                    </div>
+                                    <h4 class="mt-2 mb-0 fw-bold">{{ total_bookings|default:"0" }}</h4>
+                                    <small class="text-muted">Total Bookings</small>
+                                </div>
+                                <div class="col-md-3 col-6 text-center">
+                                    <div class="stat-circle bg-success bg-opacity-10">
+                                        <i class="fas fa-check-circle fa-2x text-success"></i>
+                                    </div>
+                                    <h4 class="mt-2 mb-0 fw-bold">{{ completed_bookings|default:"0" }}</h4>
+                                    <small class="text-muted">Completed</small>
+                                </div>
+                                <div class="col-md-3 col-6 text-center">
+                                    <div class="stat-circle bg-info bg-opacity-10">
+                                        <i class="fas fa-play-circle fa-2x text-info"></i>
+                                    </div>
+                                    <h4 class="mt-2 mb-0 fw-bold">{{ active_bookings|default:"0" }}</h4>
+                                    <small class="text-muted">Active</small>
+                                </div>
+                                <div class="col-md-3 col-6 text-center">
+                                    <div class="stat-circle bg-warning bg-opacity-10">
+                                        <i class="fas fa-clock fa-2x text-warning"></i>
+                                    </div>
+                                    <h4 class="mt-2 mb-0 fw-bold">{{ upcoming_bookings|default:"0" }}</h4>
+                                    <small class="text-muted">Upcoming</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-history me-2 text-primary"></i>Recent Bookings
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            {% if recent_bookings %}
+                                <div class="list-group list-group-flush">
+                                    {% for booking in recent_bookings %}
+                                        <div class="list-group-item d-flex align-items-center">
+                                            <div class="activity-icon me-3">
+                                                {% if booking.package %}
+                                                    <i class="fas fa-box fa-lg text-success"></i>
+                                                {% else %}
+                                                    <i class="fas fa-hotel fa-lg text-info"></i>
+                                                {% endif %}
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <p class="mb-0">
+                                                    <strong>
+                                                        {% if booking.package %}
+                                                            {{ booking.package.package_name }}
+                                                        {% else %}
+                                                            {{ booking.hotel.hotel_name }}
+                                                        {% endif %}
+                                                    </strong>
+                                                </p>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-calendar me-1"></i> 
+                                                    {{ booking.check_in|date:"M d, Y" }} to {{ booking.check_out|date:"M d, Y" }}
+                                                    | <i class="fas fa-users me-1"></i> {{ booking.guests }} guests
+                                                    | ₹{{ booking.total_price }}
+                                                </small>
+                                            </div>
+                                            <div class="ms-3">
+                                                <span class="badge {% if booking.check_out < today %}bg-secondary{% elif booking.check_in <= today and booking.check_out >= today %}bg-success{% else %}bg-primary{% endif %}">
+                                                    {% if booking.check_out < today %}
+                                                        Completed
+                                                    {% elif booking.check_in <= today and booking.check_out >= today %}
+                                                        Active
+                                                    {% else %}
+                                                        Upcoming
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No bookings yet</p>
+                                    <a href="{% url 'travels' %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-search me-1"></i>Start Exploring
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Personal Information Tab -->
+                <div class="tab-pane fade" id="personal-info" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-user-edit me-2 text-primary"></i>Personal Information
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" action="{% url 'update_profile' %}">
+                                {% csrf_token %}
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-user me-1"></i>Full Name
+                                        </label>
+                                        <input type="text" class="form-control" name="user_name" value="{{ user.user_name }}" required>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-envelope me-1"></i>Email Address
+                                        </label>
+                                        <input type="email" class="form-control" name="user_email" value="{{ user.user_email }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-phone me-1"></i>Phone Number
+                                        </label>
+                                        <input type="tel" class="form-control" name="user_phone" value="{{ user.user_phone|default:'' }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-calendar me-1"></i>Date of Birth
+                                        </label>
+                                        <input type="date" class="form-control" name="user_dob" value="{{ user.user_dob|date:'Y-m-d' }}">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-map-marker-alt me-1"></i>Address
+                                        </label>
+                                        <textarea class="form-control" name="user_address" rows="3">{{ user.user_address|default:'' }}</textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-city me-1"></i>City
+                                        </label>
+                                        <input type="text" class="form-control" name="user_city" value="{{ user.user_city|default:'' }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-globe me-1"></i>Country
+                                        </label>
+                                        <select class="form-select" name="user_country">
+                                            <option value="India" {% if user.user_country == "India" %}selected{% endif %}>India</option>
+                                            <option value="USA" {% if user.user_country == "USA" %}selected{% endif %}>USA</option>
+                                            <option value="UK" {% if user.user_country == "UK" %}selected{% endif %}>UK</option>
+                                            <option value="Canada" {% if user.user_country == "Canada" %}selected{% endif %}>Canada</option>
+                                            <option value="Australia" {% if user.user_country == "Australia" %}selected{% endif %}>Australia</option>
+                                            <option value="UAE" {% if user.user_country == "UAE" %}selected{% endif %}>UAE</option>
+                                            <option value="Singapore" {% if user.user_country == "Singapore" %}selected{% endif %}>Singapore</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="fas fa-save me-2"></i>Save Changes
+                                    </button>
+                                    <button type="reset" class="btn btn-outline-secondary px-4 ms-2">
+                                        <i class="fas fa-undo me-2"></i>Reset
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Tab -->
+                <div class="tab-pane fade" id="security" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-shield-alt me-2 text-primary"></i>Security Settings
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" action="{% url 'change_password' %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Current Password</label>
+                                    <input type="password" class="form-control" name="current_password" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">New Password</label>
+                                    <input type="password" class="form-control" name="new_password" required>
+                                    <small class="text-muted">Password must be at least 8 characters long</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Confirm New Password</label>
+                                    <input type="password" class="form-control" name="confirm_password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="fas fa-key me-2"></i>Change Password
+                                </button>
+                            </form>
+                            
+                            <hr class="my-4">
+                            
+                            <h6 class="fw-bold mb-3">Two-Factor Authentication</h6>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Enhance your account security by enabling two-factor authentication.
+                            </div>
+                            <button class="btn btn-outline-primary" disabled>
+                                <i class="fas fa-mobile-alt me-2"></i>Coming Soon
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Preferences Tab -->
+                <div class="tab-pane fade" id="preferences" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-sliders-h me-2 text-primary"></i>Preferences
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" action="{% url 'update_preferences' %}">
+                                {% csrf_token %}
+                                <h6 class="fw-bold mb-3">Travel Preferences</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Preferred Currency</label>
+                                    <select class="form-select" name="preferred_currency">
+                                        <option value="INR" {% if user.preferred_currency == "INR" %}selected{% endif %}>Indian Rupee (₹)</option>
+                                        <option value="USD" {% if user.preferred_currency == "USD" %}selected{% endif %}>US Dollar ($)</option>
+                                        <option value="EUR" {% if user.preferred_currency == "EUR" %}selected{% endif %}>Euro (€)</option>
+                                        <option value="GBP" {% if user.preferred_currency == "GBP" %}selected{% endif %}>British Pound (£)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Preferred Language</label>
+                                    <select class="form-select" name="preferred_language">
+                                        <option value="en" {% if user.preferred_language == "en" %}selected{% endif %}>English</option>
+                                        <option value="hi" {% if user.preferred_language == "hi" %}selected{% endif %}>Hindi</option>
+                                        <option value="es" {% if user.preferred_language == "es" %}selected{% endif %}>Spanish</option>
+                                        <option value="fr" {% if user.preferred_language == "fr" %}selected{% endif %}>French</option>
+                                    </select>
+                                </div>
+                                
+                                <h6 class="fw-bold mb-3 mt-4">Booking Preferences</h6>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="autoConfirm" name="auto_confirm_bookings" {% if user.auto_confirm_bookings %}checked{% endif %}>
+                                    <label class="form-check-label" for="autoConfirm">
+                                        Automatically confirm bookings
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="saveCards" name="save_payment_methods" {% if user.save_payment_methods %}checked{% endif %}>
+                                    <label class="form-check-label" for="saveCards">
+                                        Save preferences for future bookings
+                                    </label>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary px-4 mt-3">
+                                    <i class="fas fa-save me-2"></i>Save Preferences
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notifications Tab -->
+                <div class="tab-pane fade" id="notifications" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-bell me-2 text-primary"></i>Notification Preferences
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" action="{% url 'update_notifications' %}">
+                                {% csrf_token %}
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="emailNotifications" name="email_notifications" {% if user.email_notifications %}checked{% endif %}>
+                                    <label class="form-check-label fw-semibold" for="emailNotifications">
+                                        Email Notifications
+                                    </label>
+                                    <p class="small text-muted mb-0">Receive booking confirmations and updates via email</p>
+                                </div>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="smsNotifications" name="sms_notifications" {% if user.sms_notifications %}checked{% endif %}>
+                                    <label class="form-check-label fw-semibold" for="smsNotifications">
+                                        SMS Notifications
+                                    </label>
+                                    <p class="small text-muted mb-0">Receive important updates via text message</p>
+                                </div>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="promoEmails" name="promo_emails" {% if user.promo_emails %}checked{% endif %}>
+                                    <label class="form-check-label fw-semibold" for="promoEmails">
+                                        Promotional Emails
+                                    </label>
+                                    <p class="small text-muted mb-0">Receive special offers and travel deals</p>
+                                </div>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="bookingReminders" name="booking_reminders" {% if user.booking_reminders %}checked{% endif %}>
+                                    <label class="form-check-label fw-semibold" for="bookingReminders">
+                                        Booking Reminders
+                                    </label>
+                                    <p class="small text-muted mb-0">Get reminders 24 hours before check-in</p>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary px-4 mt-3">
+                                    <i class="fas fa-save me-2"></i>Save Preferences
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Avatar Modal -->
+<div class="avatar-upload-popup" id="avatarUploadBox">
+
+    <!-- Close Button -->
+    <button type="button" class="close-popup" id="closeAvatarBox">
+        <i class="fas fa-times"></i>
+    </button>
+
+    <!-- Header -->
+    <div class="upload-top text-center">
+
+        {% if user.user_avatar and user.user_avatar.url %}
+            <img src="{{ user.user_avatar.url }}"
+                 class="upload-preview"
+                 alt="{{ user.user_name }}">
+        {% else %}
+            <div class="upload-preview default-preview">
+                <i class="fas fa-user"></i>
+            </div>
+        {% endif %}
+
+        <h4 class="fw-bold mt-3 mb-1">
+            Update Profile Photo
+        </h4>
+
+        <p class="text-muted small mb-0">
+            Upload a beautiful profile picture
+        </p>
+
+    </div>
+
+    <!-- Form -->
+    <form method="POST"
+          action="{% url 'change_avatar' %}"
+          enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <!-- File Upload -->
+        <div class="custom-upload-area mt-4">
+
+            <input type="file"
+                   id="avatarInput"
+                   name="user_avatar"
+                   accept="image/jpeg,image/png,image/jpg,image/gif"
+                   required>
+
+            <label for="avatarInput" class="upload-box">
+
+                <i class="fas fa-cloud-upload-alt"></i>
+
+                <span>Choose Photo</span>
+
+                <small>
+                    JPG, PNG, GIF • Max 2MB
+                </small>
+
+            </label>
+
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-upload-photo">
+            <i class="fas fa-check-circle me-2"></i>
+            Upload Photo
+        </button>
+
+    </form>
+
+</div>
+
+<style>
+
+
+.avatar-upload-popup{
+    position:fixed;
+    top:120px;
+    left:50%;
+    transform:translateX(-50%) scale(.92);
+
+    width:360px;
+    padding:30px;
+
+    background:rgba(255,255,255,0.97);
+    backdrop-filter:blur(20px);
+
+    border-radius:28px;
+
+    border:1px solid rgba(255,255,255,0.5);
+
+    box-shadow:
+        0 25px 60px rgba(0,0,0,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:all .35s ease;
+
+    z-index:9999;
+}
+
+/* Show Popup */
+.avatar-upload-popup.show{
+    opacity:1;
+    visibility:visible;
+    transform:translateX(-50%) scale(1);
+}
+
+/* Close Button */
+.close-popup{
+    position:absolute;
+    top:15px;
+    right:15px;
+
+    width:36px;
+    height:36px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#f1f5f9;
+    color:#475569;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.close-popup:hover{
+    background:#e2e8f0;
+    transform:rotate(90deg);
+}
+
+/* Preview */
+.upload-preview{
+    width:110px;
+    height:110px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:4px solid #fff;
+
+    box-shadow:
+        0 12px 30px rgba(26,93,127,0.25);
+}
+
+.default-preview{
+    background:linear-gradient(135deg,#1a5d7f,#2d8bb8);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin:auto;
+
+    color:white;
+    font-size:42px;
+}
+
+/* Upload Area */
+.custom-upload-area input{
+    display:none;
+}
+
+.upload-box{
+    width:100%;
+    min-height:180px;
+
+    border:2px dashed #cbd5e1;
+    border-radius:22px;
+
+    background:#f8fafc;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+
+    transition:.3s ease;
+}
+
+.upload-box:hover{
+    border-color:#1a5d7f;
+    background:#eef7fb;
+    transform:translateY(-3px);
+}
+
+.upload-box i{
+    font-size:48px;
+    color:#1a5d7f;
+    margin-bottom:12px;
+}
+
+.upload-box span{
+    font-size:18px;
+    font-weight:700;
+    color:#0f172a;
+}
+
+.upload-box small{
+    margin-top:6px;
+    color:#64748b;
+}
+
+/* Upload Button */
+.btn-upload-photo{
+    width:100%;
+
+    margin-top:22px;
+
+    border:none;
+    border-radius:18px;
+
+    padding:15px;
+
+    font-size:16px;
+    font-weight:700;
+
+    color:white;
+
+    background:linear-gradient(135deg,#1a5d7f,#2d8bb8);
+
+    transition:.3s ease;
+}
+
+.btn-upload-photo:hover{
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 14px 28px rgba(26,93,127,0.3);
+}
+
+/* Mobile */
+@media(max-width:576px){
+
+    .avatar-upload-popup{
+        width:92%;
+        padding:24px;
+    }
+
+    .upload-box{
+        min-height:150px;
+    }
+
+}
+/* Profile Page Styles */
+.text-primary-gradient {
+    background: linear-gradient(135deg, #1a5d7f 0%, #2d8bb8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.bg-accent-gradient {
+    background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);
+    color: white;
+}
+/* Ensure the page header handles dynamic layout safely */
+.profile-header {
+    position: relative;
+    width: 100%;
+}
+
+/* Ensure the stats card scales cleanly based on padding, not fixed widths */
+.profile-stats-card {
+    display: inline-block;
+    width: 100%;
+    max-width: 320px; /* Limits size on large monitors instead of breaking */
+    min-width: 200px;
+    box-sizing: border-box;
+    overflow: visible; /* Prevents "Member Since" text clipping */
+}
+.profile-header {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    padding: 2rem;
+    border-radius: 24px;
+}
+
+.profile-sidebar {
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.profile-avatar-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.default-avatar {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0 auto;
+    border-radius: 50%;
+}
+
+.default-avatar i {
+    font-size: 80px;
+    color: white;
+}
+
+.btn-change-avatar {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a5d7f;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-change-avatar:hover {
+    transform: scale(1.1);
+}
+/* Sidebar Container */
+.profile-nav{
+    background: rgba(15, 23, 42, 0.95);
+    border-radius: 24px;
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* Navigation */
+.custom-profile-nav{
+    gap: 14px;
+}
+
+/* Nav Buttons */
+.custom-profile-nav .nav-link{
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 16px 20px;
+    border-radius: 18px;
+
+    background: rgba(255,255,255,0.03);
+    color: #cbd5e1;
+
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: .3px;
+
+    border: 1px solid transparent;
+
+    transition: all .35s ease;
+    overflow: hidden;
+}
+
+/* Hover Effect */
+.custom-profile-nav .nav-link:hover{
+    transform: translateX(6px);
+    background: linear-gradient(
+        135deg,
+        rgba(255,140,0,0.18),
+        rgba(255,215,0,0.10)
+    );
+
+    color: #ffffff;
+    border-color: rgba(255,215,0,0.25);
+
+    box-shadow:
+        0 8px 20px rgba(255,140,0,0.18);
+}
+
+/* Active Tab */
+.custom-profile-nav .nav-link.active{
+    background: linear-gradient(
+        135deg,
+        #ff9800,
+        #ffcc00
+    );
+
+    color: #111827;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 10px 25px rgba(255,152,0,0.35);
+}
+
+/* Icon Style */
+.custom-profile-nav .nav-link i{
+    width: 22px;
+    text-align: center;
+    font-size: 17px;
+
+    transition: transform .3s ease;
+}
+
+/* Icon Animation */
+.custom-profile-nav .nav-link:hover i{
+    transform: scale(1.15);
+}
+
+/* Active Icon */
+.custom-profile-nav .nav-link.active i{
+    transform: scale(1.1);
+}
+
+/* Glow Effect */
+.custom-profile-nav .nav-link::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.18),
+        transparent
+    );
+
+    transition: .6s;
+}
+
+.custom-profile-nav .nav-link:hover::before{
+    left: 100%;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px){
+
+    .profile-nav{
+        border-radius: 20px;
+    }
+
+    .custom-profile-nav .nav-link{
+        padding: 14px 16px;
+        font-size: 14px;
+    }
+
+}
+{% comment %} .profile-nav .nav-link {
+    color: #495057;
+    border-radius: 12px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.profile-nav .nav-link:hover {
+    background: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.profile-nav .nav-link.active {
+    background: linear-gradient(135deg, #1a5d7f 0%, #2d8bb8 100%);
+    color: white;
+} {% endcomment %}
+
+.stat-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Messages Container */
+.messages-container .alert {
+    border-radius: 12px;
+    border-left: 4px solid;
+}
+
+.alert-success {
+    border-left-color: #28a745;
+}
+
+.alert-error {
+    border-left-color: #dc3545;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-sidebar {
+        position: relative !important;
+        top: 0 !important;
+        margin-bottom: 20px;
+    }
+    
+    .profile-header h1 {
+        font-size: 2rem;
+    }
+}
+
+/* Form Styles */
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    padding: 10px 15px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #1a5d7f;
+    box-shadow: 0 0 0 0.2rem rgba(26, 93, 127, 0.25);
+}
+
+.form-switch .form-check-input:checked {
+    background-color: #1a5d7f;
+    border-color: #1a5d7f;
+}
+
+.list-group-item {
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Modal Styles */
+.modal-content {
+    border-radius: 20px;
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid #e2e8f0;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-radius: 20px 20px 0 0;
+} 
+
+.btn-close:focus {
+    box-shadow: none;
+}
+
+</style>
+{% comment %} <script>
+const openBtn = document.getElementById("openAvatarBox");
+const uploadBox = document.getElementById("avatarUploadBox");
+
+openBtn.addEventListener("click", function(e){
+    e.stopPropagation();
+    uploadBox.classList.toggle("show");
+});
+
+document.addEventListener("click", function(e){
+
+    if(!uploadBox.contains(e.target) &&
+       !openBtn.contains(e.target)){
+
+        uploadBox.classList.remove("show");
+    }
+
+});
+</script> {% endcomment %}
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const openBtn = document.getElementById("openAvatarBox");
+    const closeBtn = document.getElementById("closeAvatarBox");
+    const uploadBox = document.getElementById("avatarUploadBox");
+
+    // Open Popup
+    openBtn.addEventListener("click", function(e){
+
+        e.stopPropagation();
+
+        uploadBox.classList.toggle("show");
+
+    });
+
+    // Close Button
+    closeBtn.addEventListener("click", function(){
+
+        uploadBox.classList.remove("show");
+
+    });
+
+    // Outside Click Close
+    document.addEventListener("click", function(e){
+
+        if(
+            !uploadBox.contains(e.target) &&
+            !openBtn.contains(e.target)
+        ){
+            uploadBox.classList.remove("show");
+        }
+
+    });
+
+});
+</script>
+{% comment %} <script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const openBtn = document.getElementById("openAvatarBox");
+    const uploadBox = document.getElementById("avatarUploadBox");
+
+    if(openBtn && uploadBox){
+
+        openBtn.addEventListener("click", function(e){
+
+            e.stopPropagation();
+
+            uploadBox.classList.toggle("show");
+
+        });
+
+        document.addEventListener("click", function(e){
+
+            if(
+                !uploadBox.contains(e.target) &&
+                !openBtn.contains(e.target)
+            ){
+                uploadBox.classList.remove("show");
+            }
+
+        });
+
+    }
+
+});
+</script> {% endcomment %}
+ <script>
+// Initialize Bootstrap components
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+    
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+
+
+
+</script> 
+{% endblock %}
+

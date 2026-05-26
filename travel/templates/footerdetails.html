@@ -1,0 +1,876 @@
+ {% extends "bootstrap.html" %}
+{% load static %}
+
+{% block content %}
+ <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      background:#f4f4f4;
+    }
+
+    /* Footer */
+    .premium-footer{
+      background:#111;
+      color:white;
+      padding:60px 40px 20px;
+    }
+
+    .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:40px;
+    }
+
+    .col{
+      flex:1;
+      min-width:220px;
+    }
+
+    h3,h4{
+      margin-bottom:20px;
+      color:#ffcc00;
+    }
+
+    p{
+      color:#ddd;
+      line-height:1.7;
+    }
+
+    ul{
+      list-style:none;
+    }
+
+    ul li{
+      margin-bottom:12px;
+    }
+
+    ul li a{
+      color:#ddd;
+      text-decoration:none;
+      transition:0.3s;
+    }
+
+    ul li a:hover{
+      color:#ffcc00;
+      padding-left:5px;
+    }
+
+    .footer-socials{
+      margin-top:20px;
+    }
+
+    .footer-socials a{
+      display:inline-block;
+      width:40px;
+      height:40px;
+      line-height:40px;
+      text-align:center;
+      border-radius:50%;
+      background:#222;
+      color:white;
+      margin-right:10px;
+      transition:0.3s;
+    }
+
+    .footer-socials a:hover{
+      background:#ffcc00;
+      color:black;
+    }
+
+    .footer-bottom{
+      margin-top:40px;
+      text-align:center;
+      border-top:1px solid #333;
+      padding-top:20px;
+      color:#aaa;
+    }
+
+    /* Details Section */
+
+    .details-section{
+      padding:60px 40px;
+      background:none;
+    }
+
+    .detail-box{
+      margin-bottom:50px;
+      padding:30px;
+      background:#fafafa;
+      border-left:5px solid #ffcc00;
+      border-radius:10px;
+      box-shadow:0 0 10px rgba(0,0,0,0.05);
+    }
+
+    .detail-box h2{
+      margin-bottom:15px;
+      color:#222;
+    }
+
+    .detail-box p{
+      color:#555;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+.details-section{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px 20px;
+    background:none;
+}
+
+/* Main Card */
+
+.detail-box{
+    width:100%;
+    max-width:750px;
+    background:white;
+    padding:50px 40px;
+    border-radius:25px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+    box-shadow:
+    0 15px 40px rgba(0,0,0,0.08);
+    transition:0.4s ease;
+}
+
+/* Top Gradient Border */
+
+.detail-box::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:8px;
+    background:linear-gradient(
+    90deg,
+    #ffcc00,
+    #ff6b00,
+    #ff0080
+    );
+}
+
+/* Hover Effect */
+
+.detail-box:hover{
+    transform:translateY(-8px);
+    box-shadow:
+    0 25px 50px rgba(0,0,0,0.12);
+}
+
+/* Icon */
+
+.icon{
+    width:90px;
+    height:90px;
+    margin:auto;
+    margin-bottom:25px;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:40px;
+    background:linear-gradient(
+    135deg,
+    #ffcc00,
+    #ff8800
+    );
+    box-shadow:
+    0 10px 25px rgba(255,136,0,0.3);
+}
+
+/* Heading */
+
+.detail-box h2{
+    font-size:38px;
+    color:#222;
+    margin-bottom:20px;
+    font-weight:700;
+}
+
+/* Paragraph */
+
+.detail-box p{
+    font-size:18px;
+    color:#666;
+    line-height:1.9;
+    margin-bottom:35px;
+}
+
+/* Button */
+
+.back-btn{
+    display:inline-block;
+    padding:14px 35px;
+    border-radius:50px;
+    text-decoration:none;
+    background:linear-gradient(
+    135deg,
+    #ffcc00,
+    #ff8800
+    );
+    color:#111;
+    font-size:16px;
+    font-weight:bold;
+    transition:0.3s;
+    box-shadow:
+    0 8px 20px rgba(255,136,0,0.25);
+}
+
+.back-btn:hover{
+    transform:translateY(-3px);
+    color:white;
+    background:linear-gradient(
+    135deg,
+    #111,
+    #333
+    );
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+    .detail-box{
+        padding:35px 25px;
+    }
+
+    .detail-box h2{
+        font-size:28px;
+    }
+
+    .detail-box p{
+        font-size:16px;
+    }
+
+    .icon{
+        width:75px;
+        height:75px;
+        font-size:32px;
+    }
+}
+
+.enquiry-form{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.enquiry-form input,
+.enquiry-form textarea{
+    width:100%;
+    padding:15px 18px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    font-size:16px;
+    outline:none;
+    transition:0.3s;
+}
+
+.enquiry-form input:focus,
+.enquiry-form textarea:focus{
+    border-color:#ff9900;
+    box-shadow:0 0 10px rgba(255,153,0,0.2);
+}
+
+.enquiry-form button{
+    padding:15px;
+    border:none;
+    border-radius:50px;
+    background:linear-gradient(135deg,#ffcc00,#ff8800);
+    color:#111;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.enquiry-form button:hover{
+    background:#111;
+    color:white;
+}
+
+
+.condition-list{
+    text-align:left;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.condition-item{
+    background:#f9fafc;
+    padding:18px 20px;
+    border-radius:15px;
+    font-size:16px;
+    color:#444;
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    transition:0.3s;
+    border-left:5px solid #00bcd4;
+}
+
+.condition-item:hover{
+    transform:translateX(5px);
+    background:#eef9fb;
+}
+
+.condition-item span{
+    color:#00bcd4;
+    font-weight:bold;
+    font-size:18px;
+}
+
+.policy-list{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    text-align:left;
+}
+
+.policy-item{
+    display:flex;
+    gap:12px;
+    padding:18px 20px;
+    background:#f8f9fd;
+    border-radius:15px;
+    border-left:5px solid #667eea;
+    color:#444;
+    font-size:16px;
+    transition:0.3s;
+}
+
+.policy-item:hover{
+    transform:translateX(6px);
+    background:#eef1ff;
+}
+
+.policy-item span{
+    color:#667eea;
+    font-weight:bold;
+    font-size:18px;
+}
+.refund-list{ display:flex;
+     flex-direction:column; gap:18px;
+      text-align:left; } 
+.refund-item{ display:flex; gap:12px; 
+    padding:18px 20px; background:#f9fafc; 
+    border-radius:15px;
+     border-left:5px solid #f7971e; font-size:16px; color:#444; transition:0.3s; }
+.refund-item:hover{ transform:translateX(6px); background:#fff7e6; } .refund-item span{ color:#f7971e; font-weight:bold; font-size:18px; }
+
+.adventure-grid{ display:grid; 
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); 
+    gap:18px; text-align:left;
+ } 
+.adventure-card{ background:#f9fbff; padding:18px 20px; 
+    border-radius:15px; border-left:5px solid #0072ff; 
+    transition:0.3s; } 
+.adventure-card h3{ margin-bottom:8px; color:#222; } 
+.adventure-card p{ color:#666; font-size:15px; line-height:1.6; } 
+.adventure-card:hover{ transform:translateY(-5px); background:#eef5ff; }
+
+
+
+.hotel-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px;
+    text-align:left;
+}
+
+.hotel-card{
+    background:#faf8ff;
+    padding:18px 20px;
+    border-radius:15px;
+    border-left:5px solid #6a11cb;
+    transition:0.3s;
+}
+
+.hotel-card h3{
+    margin-bottom:8px;
+    color:#222;
+}
+
+.hotel-card p{
+    color:#666;
+    font-size:15px;
+    line-height:1.6;
+}
+
+.hotel-card:hover{
+    transform:translateY(-5px);
+    background:#f0eaff;
+}
+
+
+.beach-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px;
+    text-align:left;
+}
+
+.beach-card{
+    background:#f0fbff;
+    padding:18px 20px;
+    border-radius:15px;
+    border-left:5px solid #00aaff;
+    transition:0.3s;
+}
+
+.beach-card h3{
+    margin-bottom:8px;
+    color:#222;
+}
+
+.beach-card p{
+    color:#666;
+    font-size:15px;
+    line-height:1.6;
+}
+
+.beach-card:hover{
+    transform:translateY(-5px);
+    background:#e6f7ff;
+}
+
+
+.nature-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px;
+    text-align:left;
+}
+
+.nature-card{
+    background:#f3fff7;
+    padding:18px 20px;
+    border-radius:15px;
+    border-left:5px solid #38ef7d;
+    transition:0.3s;
+}
+
+.nature-card h3{
+    margin-bottom:8px;
+    color:#222;
+}
+
+.nature-card p{
+    color:#666;
+    font-size:15px;
+    line-height:1.6;
+}
+
+.nature-card:hover{
+    transform:translateY(-5px);
+    background:#eafff2;
+}
+
+
+
+
+
+
+
+
+  </style>
+</head>
+
+<body>
+
+<!-- DETAILS SECTION -->
+
+<section class="details-section">
+
+    {% if enquiry %}
+        <div class="detail-box">
+            <div class="icon">📩</div>
+            <h2>Online Enquiry</h2>
+            <p>
+                Contact us anytime for travel booking, destination guidance,
+                hotel packages and holiday planning.
+            </p>
+            <form class="enquiry-form"> 
+                <input type="text" placeholder="Your Name" required> 
+                <input type="email" placeholder="Your Email" required> 
+                <input type="text" placeholder="Destination" required> 
+                <textarea placeholder="Write Your Enquiry..." rows="5"></textarea> 
+                <button type="submit"> Send Enquiry </button> </form><br>
+                
+            
+
+    {% elif booking %}
+       
+            <div class="detail-box">
+
+                <div class="icon">📝</div>
+
+                <h2>Booking Conditions</h2>
+
+                <p class="intro">
+                    Please read our booking terms carefully before confirming your trip.
+                </p>
+
+                <div class="condition-list">
+
+                    <div class="condition-item">
+                        <span>✔</span>
+                        Valid government ID proof is required during booking.
+                    </div>
+
+                    <div class="condition-item">
+                        <span>✔</span>
+                        Minimum 30% advance payment is required to confirm reservation.
+                    </div>
+
+                    <div class="condition-item">
+                        <span>✔</span>
+                        Cancellation charges may apply based on cancellation date.
+                    </div>
+
+                    <div class="condition-item">
+                        <span>✔</span>
+                        Full payment must be completed before journey date.
+                    </div>
+
+                    <div class="condition-item">
+                        <span>✔</span>
+                        Hotel and transport availability depends on seasonal demand.
+                    </div>
+
+                    <div class="condition-item">
+                        <span>✔</span>
+                        Travel insurance is recommended for all travelers.
+                    </div>
+
+                </div>
+
+    
+
+
+
+
+            
+
+    {% elif privacy %}
+    
+<div class="detail-box">
+
+    <div class="icon">🔒</div>
+
+    <h2>Privacy Policy</h2>
+
+    <p class="intro">
+        Your privacy and personal information are important to us.
+        We are committed to protecting your data with complete security.
+    </p>
+
+    <div class="policy-list">
+
+        <div class="policy-item">
+            <span>✔</span>
+            We never share your personal information with third parties.
+        </div>
+
+        <div class="policy-item">
+            <span>✔</span>
+            All payment transactions are secured and encrypted.
+        </div>
+
+        <div class="policy-item">
+            <span>✔</span>
+            Customer information is used only for booking and support purposes.
+        </div>
+
+        <div class="policy-item">
+            <span>✔</span>
+            We protect your account and travel details with high-level security.
+        </div>
+
+        <div class="policy-item">
+            <span>✔</span>
+            Cookies may be used to improve website experience and performance.
+        </div>
+
+        <div class="policy-item">
+            <span>✔</span>
+            Users can request data removal anytime by contacting support.
+        </div>
+
+    </div>
+
+   
+
+
+    {% elif refund %}
+        
+        <div class="detail-box">
+
+            <div class="icon">💰</div>
+
+            <h2>Refund Policy</h2>
+
+            <p class="intro">
+                We aim to provide a fair and transparent refund process for all our customers.
+            </p>
+
+            <div class="refund-list">
+
+                <div class="refund-item">
+                    <span>✔</span>
+                    Refund requests must be submitted within 7 days of cancellation.
+                </div>
+
+                <div class="refund-item">
+                    <span>✔</span>
+                    Approved refunds will be processed within 5–7 working days.
+                </div>
+
+                <div class="refund-item">
+                    <span>✔</span>
+                    Service charges or payment gateway fees may be non-refundable.
+                </div>
+
+                <div class="refund-item">
+                    <span>✔</span>
+                    Partial refunds may apply depending on cancellation time.
+                </div>
+
+                <div class="refund-item">
+                    <span>✔</span>
+                    No refund will be issued for last-minute cancellations (within 24 hours).
+                </div>
+
+                <div class="refund-item">
+                    <span>✔</span>
+                    Refunds will be credited to the original payment method only.
+                </div>
+
+            </div>
+
+   
+
+
+    {% elif adventure %}
+      
+        <div class="detail-box">
+
+            <div class="icon">🏔</div>
+
+            <h2>Adventure Trips</h2>
+
+            <p class="intro">
+                Get ready for thrilling experiences filled with nature, excitement, and unforgettable memories.
+            </p>
+
+            <div class="adventure-grid">
+
+                <div class="adventure-card">
+                    <h3>🏕 Camping</h3>
+                    <p>Enjoy nights under the stars with bonfires and nature vibes.</p>
+                </div>
+
+                <div class="adventure-card">
+                    <h3>🥾 Trekking</h3>
+                    <p>Explore mountains, valleys, and scenic hiking trails.</p>
+                </div>
+
+                <div class="adventure-card">
+                    <h3>🌊 River Rafting</h3>
+                    <p>Feel the adrenaline rush with exciting white-water rafting.</p>
+                </div>
+
+                <div class="adventure-card">
+                    <h3>🪂 Paragliding</h3>
+                    <p>Soar high in the sky and enjoy breathtaking aerial views.</p>
+                </div>
+
+                <div class="adventure-card">
+                    <h3>🐪 Desert Safari</h3>
+                    <p>Experience dunes, camel rides, and desert sunsets.</p>
+                </div>
+
+                <div class="adventure-card">
+                    <h3>🧗 Rock Climbing</h3>
+                    <p>Challenge yourself with thrilling climbing adventures.</p>
+                </div>
+
+            </div>
+
+   
+
+
+
+    {% elif hotels %}
+      
+        <div class="detail-box">
+
+            <div class="icon">🏨</div>
+
+            <h2>Luxury Hotels</h2>
+
+            <p class="intro">
+                Experience world-class comfort, premium services, and unforgettable stays in top luxury hotels.
+            </p>
+
+            <div class="hotel-grid">
+
+                <div class="hotel-card">
+                    <h3>🛎 5★ Comfort</h3>
+                    <p>Premium rooms with elegant interiors and top-class amenities.</p>
+                </div>
+
+                <div class="hotel-card">
+                    <h3>🏊 Swimming Pool</h3>
+                    <p>Relax in infinity pools with beautiful scenic views.</p>
+                </div>
+
+                <div class="hotel-card">
+                    <h3>🍽 Fine Dining</h3>
+                    <p>Multi-cuisine restaurants with world-class chefs.</p>
+                </div>
+
+                <div class="hotel-card">
+                    <h3>🧖 Spa & Wellness</h3>
+                    <p>Rejuvenate your body and mind with premium spa services.</p>
+                </div>
+
+                <div class="hotel-card">
+                    <h3>🚖 Airport Pickup</h3>
+                    <p>Hassle-free luxury transfers for your comfort.</p>
+                </div>
+
+                <div class="hotel-card">
+                    <h3>📶 Free Wi-Fi</h3>
+                    <p>High-speed internet available throughout the hotel.</p>
+                </div>
+
+            </div>
+
+        
+
+
+    {% elif beach %}
+     
+        <div class="detail-box">
+
+            <div class="icon">🏖</div>
+
+            <h2>Beach Destinations</h2>
+
+            <p class="intro">
+                Relax on golden sands, enjoy ocean waves, and witness breathtaking sunsets at the world’s best beaches.
+            </p>
+
+            <div class="beach-grid">
+
+                <div class="beach-card">
+                    <h3>🌅 Sunset Views</h3>
+                    <p>Enjoy magical sunsets over calm sea horizons.</p>
+                </div>
+
+                <div class="beach-card">
+                    <h3>🏄 Water Sports</h3>
+                    <p>Try surfing, jet skiing, and parasailing adventures.</p>
+                </div>
+
+                <div class="beach-card">
+                    <h3>🌴 Tropical Vibes</h3>
+                    <p>Palm trees, soft sands, and peaceful ocean breeze.</p>
+                </div>
+
+                <div class="beach-card">
+                    <h3>🍹 Beach Resorts</h3>
+                    <p>Stay in luxury seaside resorts with premium comfort.</p>
+                </div>
+
+                <div class="beach-card">
+                    <h3>🚤 Boat Rides</h3>
+                    <p>Explore islands and coastlines with scenic boat tours.</p>
+                </div>
+
+                <div class="beach-card">
+                    <h3>🔥 Beach Bonfire</h3>
+                    <p>Enjoy night parties and bonfire gatherings by the sea.</p>
+                </div>
+
+            </div>
+
+   
+
+
+    {% else %}
+       
+        <div class="detail-box">
+
+            <div class="icon">🌿</div>
+
+            <h2>Nature Tours</h2>
+
+            <p class="intro">
+                Escape into nature and explore forests, mountains, waterfalls, and peaceful landscapes.
+            </p>
+
+            <div class="nature-grid">
+
+                <div class="nature-card">
+                    <h3>🌲 Forest Trails</h3>
+                    <p>Walk through dense green forests and fresh air paths.</p>
+                </div>
+
+                <div class="nature-card">
+                    <h3>🏔 Mountain Views</h3>
+                    <p>Experience breathtaking views from high mountain peaks.</p>
+                </div>
+
+                <div class="nature-card">
+                    <h3>💧 Waterfalls</h3>
+                    <p>Discover hidden waterfalls surrounded by natural beauty.</p>
+                </div>
+
+                <div class="nature-card">
+                    <h3>🦜 Wildlife</h3>
+                    <p>Observe birds, animals, and rich biodiversity in nature.</p>
+                </div>
+
+                <div class="nature-card">
+                    <h3>🌄 Sunrise Spots</h3>
+                    <p>Witness peaceful and magical sunrise moments.</p>
+                </div>
+
+                <div class="nature-card">
+                    <h3>🏕 Eco Camping</h3>
+                    <p>Stay close to nature with safe and eco-friendly camping.</p>
+                </div>
+
+            </div>
+
+   
+
+        
+    {% endif %}
+            <br>
+            <a href="{% url 'travels' %}" class="back-btn no-loader">
+                ← Back to Home
+            </a>
+        </div>
+
+</section>
+
+
+{% endblock %}

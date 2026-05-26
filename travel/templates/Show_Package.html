@@ -1,0 +1,268 @@
+{% extends "bootstrap.html" %}
+
+{% block title %}Packages{% endblock %}
+
+{% block content %}
+
+<style>
+.package-list-page{
+    padding:35px 0 80px;
+}
+
+.package-hero-title{
+    text-align:center;
+    margin-bottom:45px;
+    animation:fadeUp .8s ease both;
+}
+
+.package-hero-title span{
+    color:#d89216;
+    text-transform:uppercase;
+    letter-spacing:4px;
+    font-size:13px;
+    font-weight:900;
+}
+
+.package-hero-title h1{
+    font-family:'Playfair Display',serif;
+    font-size:56px;
+    font-weight:900;
+    color:#07111f;
+    margin-top:10px;
+}
+
+.title-line{
+    width:90px;
+    height:5px;
+    border-radius:50px;
+    margin:14px auto 0;
+    background:linear-gradient(90deg,#f5b642,#00b8d9);
+}
+
+.package-card{
+    position:relative;
+    height:100%;
+    overflow:hidden;
+    border-radius:32px;
+    background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(242,251,255,.78));
+    border:1.5px solid rgba(245,182,66,.28);
+    box-shadow:
+        0 22px 58px rgba(15,23,42,.13),
+        0 0 28px rgba(245,182,66,.10);
+    transition:.45s ease;
+    animation:cardRise .8s ease both;
+}
+
+.package-card:hover{
+    transform:translateY(-12px) scale(1.015);
+    box-shadow:
+        0 35px 85px rgba(15,23,42,.20),
+        0 0 38px rgba(245,182,66,.20);
+}
+
+.package-img-wrap{
+    position:relative;
+    overflow:hidden;
+}
+
+.package-img{
+    width:100%;
+    height:235px;
+    object-fit:cover;
+    transition:.65s ease;
+    filter:saturate(1.1) contrast(1.03);
+}
+
+.package-card:hover .package-img{
+    transform:scale(1.12);
+}
+
+.trip-badge{
+    position:absolute;
+    top:18px;
+    left:18px;
+    background:linear-gradient(135deg,#07111f,#17233b);
+    color:#f5b642;
+    padding:9px 17px;
+    border-radius:50px;
+    font-size:13px;
+    font-weight:900;
+    border:1px solid rgba(245,182,66,.42);
+    box-shadow:0 10px 24px rgba(0,0,0,.22);
+}
+
+.package-body{
+    padding:24px;
+    background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,248,232,.62));
+}
+
+.package-name{
+    font-size:20px;
+    font-weight:900;
+    color:#07111f;
+    text-transform:uppercase;
+    letter-spacing:.3px;
+    margin-bottom:8px;
+}
+
+.mini-info{
+    color:#64748b;
+    font-size:14px;
+}
+
+.package-desc{
+    color:#64748b;
+    min-height:52px;
+    margin:14px 0;
+}
+
+.price-text{
+    font-size:29px;
+    color:#009b76;
+    font-weight:900;
+    margin-bottom:4px;
+}
+
+.action-row{
+    display:flex;
+    gap:10px;
+    margin-top:22px;
+}
+
+.premium-btn{
+    flex:1;
+    border:none;
+    border-radius:50px;
+    padding:12px 16px;
+    font-weight:900;
+    text-align:center;
+    text-decoration:none;
+    transition:.35s ease;
+}
+
+.book-btn{
+    background:linear-gradient(135deg,#00c6e8,#0077b6);
+    color:#fff;
+    box-shadow:0 12px 28px rgba(0,184,217,.28);
+}
+
+.details-btn{
+    background:linear-gradient(135deg,#07111f,#182745);
+    color:#fff;
+    box-shadow:0 12px 28px rgba(7,17,31,.25);
+}
+
+.book-btn:hover,
+.details-btn:hover{
+    transform:translateY(-3px);
+    color:#fff;
+}
+
+.empty-box{
+    text-align:center;
+    background:rgba(255,255,255,.76);
+    backdrop-filter:blur(20px);
+    border-radius:28px;
+    padding:55px 25px;
+    box-shadow:0 20px 50px rgba(15,23,42,.10);
+}
+
+@keyframes fadeUp{
+    from{opacity:0; transform:translateY(28px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+@keyframes cardRise{
+    from{opacity:0; transform:translateY(36px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+@media(max-width:768px){
+    .package-hero-title h1{
+        font-size:36px;
+    }
+
+    .action-row{
+        flex-direction:column;
+    }
+
+    .package-img{
+        height:215px;
+    }
+}
+</style>
+
+<section class="package-list-page">
+
+    <div class="package-hero-title">
+        <span>Explore Premium Tours</span>
+        <h1>Luxury Packages</h1>
+        <div class="title-line"></div>
+    </div>
+
+    {% if packages %}
+    <div class="row g-4">
+        {% for p in packages %}
+        <div class="col-lg-4 col-md-6">
+
+            <div class="package-card">
+                <a href= "{% url 'add_to_cart' p.id %}" class="wishlist-btn no-loader">
+                    <i class="fa fa-heart"></i>
+                 </a>
+
+                <div class="package-img-wrap">
+                    <img src="{{ p.image.url }}" class="package-img">
+                    <span class="trip-badge">{{ p.duration_days }} Days Trip</span>
+                </div>
+
+                <div class="package-body">
+
+                    <h5 class="package-name">{{ p.package_name }}</h5>
+
+                    <p class="mini-info mb-2">
+                        📍 {{ p.destination.name }}
+                    </p>
+
+                    <p class="package-desc">
+                        {{ p.package_description|truncatewords:13 }}
+                    </p>
+
+                    <p class="price-text">
+                        ₹{{ p.package_price }}
+                    </p>
+
+                    <p class="mini-info">
+                        🏨 Hotel: {{ p.hotel_name.hotel_name }}
+                    </p>
+
+                    <div class="action-row">
+                        <a href="{% url 'package_book' p.id %}" class="premium-btn book-btn">
+                            Book Package
+                        </a>
+
+                        <a href="{% url 'package_details' p.id %}" class="premium-btn details-btn">
+                            View Details
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-box">
+        <h3>No packages available</h3>
+        <p class="text-muted mb-0">Please add travel packages first.</p>
+    </div>
+    {% endif %}
+
+</section>
+
+{% endblock %}
+
+{% block footer %}
+{% include "footer.html" %}
+{% endblock %}

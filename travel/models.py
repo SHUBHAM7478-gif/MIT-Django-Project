@@ -1,18 +1,42 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password, check_password
-
+from django.utils import timezone
 # Create your models here.
 
 
+# User model
 # User model
 class User(models.Model):
     user_name = models.CharField(max_length=100)
     user_email = models.EmailField(unique=True)
     user_password = models.CharField(max_length=255)
 
+    # Add Additional fields for profile
+    user_phone = models.CharField(max_length=15, blank=True, null=True)
+    user_dob = models.DateField(blank=True, null=True)
+    user_address = models.TextField(max_length=255, blank=True, null=True)
+    user_city = models.CharField(max_length=100, blank=True, null=True)
+    user_country = models.CharField(max_length=100, default="India", blank=True, null=True)
+    user_avatar = models.ImageField(upload_to='profile_avatars/', blank=True, null=True)
+
+    # preferences
+    preferred_currency = models.CharField(max_length=3, default='INR')
+    preferred_language = models.CharField(max_length=10, default='en')
+    auto_confirm_bookings = models.BooleanField(default=False)
+    save_payment_methods = models.BooleanField(default=True)
+
+    # notification settings - FIXED: Changed to match template
+    email_notifications = models.BooleanField(default=True)
+    sms_notifications = models.BooleanField(default=False)
+    promo_emails = models.BooleanField(default=True)  # ← Changed from promo_email
+    booking_reminders = models.BooleanField(default=True)  # ← Changed from bookings_reminders
+
+    # Account status
+    loyalty_points = models.IntegerField(default=0)
+    member_since = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return self.user_name
-    
 
 
 # Destination Model
@@ -85,7 +109,61 @@ class Booking(models.Model):
     guests = models.IntegerField(default=1)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
+    payment_method = models.CharField(
+    max_length=20,
+    choices=[
+        ('online', 'Online Payment'),
+        ('cash', 'Cash on Arrival')
+    ],
+    default='cash'
+   )
+
     booking_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('success', 'Success'),
+        ('failed', 'Failed'),
+        ('cancelled', 'Cancelled'),
+    ]
+    
+    payment_status = models.CharField(
+        max_length=20,
+        choices=PAYMENT_STATUS_CHOICES,
+        default='pending'
+    )
+    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_signature = models.CharField(max_length=200, blank=True, null=True)
+    
+    def __str__(self):
+        return f"{self.user.user_name} booking - {self.payment_status}"
+
+
+class BookingSession(models.Model):
+    """Temporary storage for booking details before payment"""
+    session_key = models.CharField(max_length=100, unique=True)
+    booking_data = models.JSONField()  # Stores all booking details
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    
+    def is_expired(self):
+        from django.utils import timezone
+        return timezone.now() > self.expires_at
+    
+
+
+class PackageImage(models.Model):
+    package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='package_images/')
 
     def __str__(self):
-        return f"{self.user.user_name} booking"
+        return self.package.package_name
+    
+class HotelImage(models.Model):
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='hotel_images/')
+
+    def __str__(self):
+        return self.hotel.hotel_name
