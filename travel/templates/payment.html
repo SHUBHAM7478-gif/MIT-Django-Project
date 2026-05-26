@@ -4,31 +4,27 @@
 {% block content %}
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-
 body{
     background:#07111f !important;
     font-family:'Poppins', sans-serif;
 }
 
-/* PAGE */
 .payment-page{
     width:100vw;
     min-height:100vh;
     margin-left:calc(50% - 50vw);
     margin-top:-20px;
-
     display:flex;
     align-items:center;
     justify-content:center;
-
     background:
         linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.65)),
         url("https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=2070") center/cover;
 }
 
-/* CARD */
 .payment-card{
     width:100%;
     max-width:520px;
@@ -38,7 +34,6 @@ body{
     box-shadow:0 25px 80px rgba(0,0,0,.35);
 }
 
-/* HEADER */
 .payment-top{
     text-align:center;
     padding:35px 25px;
@@ -58,12 +53,10 @@ body{
     color:#5a6a7a;
 }
 
-/* BODY */
 .payment-body{
     padding:25px;
 }
 
-/* BOX */
 .booking-box{
     background:#fffaf0;
     border:1px solid #f3d18a;
@@ -92,7 +85,6 @@ body{
     color:#08213f;
 }
 
-/* AMOUNT */
 .amount{
     text-align:center;
     margin:25px 0;
@@ -109,7 +101,6 @@ body{
     font-weight:800;
 }
 
-/* SECURITY */
 .secure{
     display:flex;
     gap:12px;
@@ -125,7 +116,6 @@ body{
     color:#00b894;
 }
 
-/* BUTTON */
 .pay-btn{
     width:100%;
     padding:15px;
@@ -144,98 +134,200 @@ body{
     box-shadow:0 10px 25px rgba(0,184,217,.3);
 }
 
+.pay-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.alert {
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+.alert-danger {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.alert-success {
+    background-color: #d1fae5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+}
+
+.alert-warning {
+    background-color: #fed7aa;
+    color: #ea580c;
+    border: 1px solid #fdba74;
+}
 </style>
 
 <div class="payment-page">
-
     <div class="payment-card">
-
         <div class="payment-top">
             <h2>Secure Payment</h2>
             <p>Complete your booking safely with Razorpay</p>
         </div>
 
         <div class="payment-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'warning' %}warning{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-            <!-- BOOKING -->
             <div class="booking-box">
-
                 <div class="booking-item">
-                    <span>Name</span>
-                    <span>{{ name }}</span>
+                    <span><i class="fas fa-user"></i> Name</span>
+                    <span>{{ name|default:"Guest" }}</span>
                 </div>
                 <div class="booking-item">
-                    <span>Booking Name</span>
-                    <span>{{ pac }}</span>
+                    <span><i class="fas fa-ticket-alt"></i> Booking Name</span>
+                    <span>{{ pac|default:"Booking" }}</span>
                 </div>
-
                 <div class="booking-item">
-                    <span>Gateway</span>
+                    <span><i class="fas fa-credit-card"></i> Gateway</span>
                     <span>Razorpay</span>
                 </div>
-
                 <div class="booking-item">
-                    <span>Status</span>
-                    <span style="color:#ff9800;">Pending</span>
+                    <span><i class="fas fa-clock"></i> Status</span>
+                    <span style="color:#ff9800;"><i class="fas fa-spinner fa-pulse"></i> Pending Payment</span>
                 </div>
-
             </div>
 
-            <!-- AMOUNT -->
             <div class="amount">
-                <h6>Total Amount</h6>
-                <h1>₹{{ amount }}</h1>
+                <h6><i class="fas fa-rupee-sign"></i> Total Amount</h6>
+                <h1>₹{{ amount|default:"0" }}</h1>
             </div>
 
-            <!-- SECURITY -->
             <div class="secure">
-                <i class="fa fa-lock"></i>
+                <i class="fas fa-lock"></i>
                 <div>
                     <b>Secure Payment</b><br>
                     <small>Your payment is encrypted & safe with Razorpay</small>
                 </div>
             </div>
 
-            <!-- BUTTON -->
             <button id="rzp-button1" class="pay-btn">
-                Pay Now
+                <i class="fas fa-credit-card"></i> Pay Now ₹{{ amount|default:"0" }}
             </button>
-
         </div>
-
     </div>
-
 </div>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const razorpayKey = "{{ razorpay_key|safe }}";
+const paymentAmount = "{{ payment.amount|default:'0' }}";
+const paymentOrderId = "{{ payment.id|default:'' }}";
+const userName = "{{ name|default:'Guest' }}";
+const userEmail = "{{ booking_email|default:'guest@example.com' }}";
+
+console.log("Razorpay Config:", {key: razorpayKey, amount: paymentAmount, orderId: paymentOrderId});
+
+if (!razorpayKey || razorpayKey === "None" || razorpayKey === "") {
+    document.getElementById('rzp-button1').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Payment Config Error';
+    document.getElementById('rzp-button1').disabled = true;
+}
 
 var options = {
-    "key": "{{ razorpay_key }}",
-    "amount": "{{ payment.amount }}",
+    "key": razorpayKey,
+    "amount": paymentAmount,
     "currency": "INR",
     "name": "TripTravels",
     "description": "Booking Payment",
-    "order_id": "{{ payment.id }}",
-
-    "handler": function (response){
-        alert("Payment Successful!");
-        window.location.href = "{% url 'success' %}";
+    "order_id": paymentOrderId,
+    "prefill": {
+        "name": userName,
+        "email": userEmail
     },
-
     "theme": {
         "color": "#00b8d9"
+    },
+    "modal": {
+        "ondismiss": function() {
+            window.location.href = "{% url 'payment_cancelled' %}";
+        }
+    },
+    "handler": function(response){
+        console.log("Payment success:", response);
+        
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{% url 'payment_verification' %}";
+        
+        var csrfToken = getCookie('csrftoken');
+        var csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+        
+        var paymentId = document.createElement('input');
+        paymentId.type = 'hidden';
+        paymentId.name = 'razorpay_payment_id';
+        paymentId.value = response.razorpay_payment_id;
+        form.appendChild(paymentId);
+        
+        var orderIdInput = document.createElement('input');
+        orderIdInput.type = 'hidden';
+        orderIdInput.name = 'razorpay_order_id';
+        orderIdInput.value = response.razorpay_order_id;
+        form.appendChild(orderIdInput);
+        
+        var signature = document.createElement('input');
+        signature.type = 'hidden';
+        signature.name = 'razorpay_signature';
+        signature.value = response.razorpay_signature;
+        form.appendChild(signature);
+        
+        document.body.appendChild(form);
+        form.submit();
     }
 };
 
-var rzp1 = new Razorpay(options);
+var rzp = new Razorpay(options);
 
 document.getElementById('rzp-button1').onclick = function(e){
-    rzp1.open();
     e.preventDefault();
+    rzp.open();
 };
-
 </script>
 
-{% endblock %} 
+{% endblock %}

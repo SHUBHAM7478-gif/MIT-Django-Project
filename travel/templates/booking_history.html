@@ -348,10 +348,10 @@
 
                                     </a>
                                     <a href="/my-bookings/delete/{{ b.id }}" 
-                                       class="btn-action btn-cancel"
-                                       onclick="return confirm('Are you sure you want to cancel this booking? This action cannot be undone.')">
+                                        class="btn-action btn-cancel"
+                                        onclick="return confirm('Are you sure you want to cancel this booking?\n\nBooking ID: #{{ b.id }}\nAmount: ₹{{ b.total_price }}\n\nThis action cannot be undone!');">
                                         <i class="fas fa-trash-alt"></i>
-                                        <span>Cancel</span>
+                                        <span>Cancel Booking</span>
                                     </a>
                                 </div>
                                 

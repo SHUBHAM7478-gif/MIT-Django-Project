@@ -121,8 +121,38 @@ class Booking(models.Model):
     booking_at = models.DateTimeField(auto_now_add=True)
     created_at = models.DateTimeField(default=timezone.now)
 
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('success', 'Success'),
+        ('failed', 'Failed'),
+        ('cancelled', 'Cancelled'),
+    ]
+    
+    payment_status = models.CharField(
+        max_length=20,
+        choices=PAYMENT_STATUS_CHOICES,
+        default='pending'
+    )
+    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_signature = models.CharField(max_length=200, blank=True, null=True)
+    
     def __str__(self):
-        return f"{self.user.user_name} booking"
+        return f"{self.user.user_name} booking - {self.payment_status}"
+
+
+class BookingSession(models.Model):
+    """Temporary storage for booking details before payment"""
+    session_key = models.CharField(max_length=100, unique=True)
+    booking_data = models.JSONField()  # Stores all booking details
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    
+    def is_expired(self):
+        from django.utils import timezone
+        return timezone.now() > self.expires_at
+    
+
 
 class PackageImage(models.Model):
     package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name='images')
