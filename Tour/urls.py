@@ -15,7 +15,7 @@ urlpatterns = [
     path('travels/', views.travels_page, name='travels'),
     path('search/', views.search_method, name='search'),
     path('logout/', views.logout_user, name='logout'),
-    path('s/', views.succes, name='s'),
+    path('success/<int:booking_id>/', views.succes, name='success_page'),
 
     path('package-book/<int:id>/', views.package_booking, name='package_book'),
     path('hotel-book/<int:id>/', views.hotel_booking, name='hotel_book'),
@@ -47,7 +47,6 @@ urlpatterns = [
     path('payment/', views.payment_page, name='payment_page'),
     path('payment-verification/', views.payment_verification, name='payment_verification'),
     path('payment-cancelled/', views.payment_cancel, name='payment_cancelled'),
-    path('success/', views.succes, name='success'),
 ]
 
 if settings.DEBUG:

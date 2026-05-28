@@ -16,23 +16,17 @@ html,body{
 /* MAIN SECTION */
 .success-page{
     position:relative;
-
     width:100vw;
     min-height:100vh;
-
     margin:0;
     padding:40px 15px;
-
     display:flex;
     align-items:center;
     justify-content:center;
-
     overflow:hidden;
-
     background:
         linear-gradient(rgba(5,10,20,.72), rgba(5,10,20,.82)),
         url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070&auto=format&fit=crop");
-
     background-size:cover;
     background-position:center center;
     background-repeat:no-repeat;
@@ -67,21 +61,16 @@ html,body{
 .success-card{
     width:100%;
     max-width:650px;
-    
     background:rgba(255,255,255,.96);
     backdrop-filter:blur(15px);
-
     border-radius:30px;
     padding:45px 35px;
     text-align:center;
-
     position:relative;
     z-index:2;
-
     box-shadow:
         0 30px 70px rgba(0,0,0,.35),
         0 0 35px rgba(245,182,66,.20);
-
     animation:cardShow .8s ease;
 }
 .success-card{
@@ -104,21 +93,14 @@ html,body{
     width:120px;
     height:120px;
     margin:auto auto 25px;
-
     border-radius:50%;
-
     display:flex;
     align-items:center;
     justify-content:center;
-
     background:linear-gradient(135deg,#00c853,#43e97b);
     color:#fff;
-
     font-size:58px;
-
-    box-shadow:
-        0 15px 40px rgba(0,200,83,.35);
-
+    box-shadow:0 15px 40px rgba(0,200,83,.35);
     animation:pulse 2s infinite;
 }
 
@@ -148,11 +130,9 @@ html,body{
 .booking-info{
     background:#f8fbff;
     border:1px solid #e3edf8;
-
     border-radius:18px;
     padding:22px;
     margin-bottom:30px;
-
     text-align:left;
 }
 
@@ -167,6 +147,12 @@ html,body{
     justify-content:space-between;
     margin-bottom:12px;
     font-size:15px;
+    padding:8px 0;
+    border-bottom: 1px dashed #e0e0e0;
+}
+
+.info-row:last-child{
+    border-bottom: none;
 }
 
 .info-row span:first-child{
@@ -191,10 +177,8 @@ html,body{
     border:none;
     padding:14px 28px;
     border-radius:50px;
-
     font-weight:800;
     font-size:15px;
-
     transition:.3s ease;
     text-decoration:none;
 }
@@ -211,6 +195,12 @@ html,body{
     box-shadow:0 12px 30px rgba(0,184,217,.28);
 }
 
+.download-btn{
+    background:linear-gradient(135deg,#dc2626,#b91c1c);
+    color:#fff;
+    box-shadow:0 12px 30px rgba(220,38,38,.30);
+}
+
 .success-btn:hover{
     transform:translateY(-4px);
     color:#fff;
@@ -218,54 +208,41 @@ html,body{
 
 /* MOBILE */
 @media(max-width:768px){
-
     .success-card{
         padding:35px 22px;
         border-radius:24px;
     }
-
     .success-title{
         font-size:30px;
     }
-
     .success-subtitle{
         font-size:14px;
     }
-
     .info-row{
         flex-direction:column;
         gap:3px;
     }
-
     .action-buttons{
         flex-direction:column;
     }
-
     .success-btn{
         width:100%;
     }
-    @media(max-width:768px){
-
     .success-page{
         padding:40px 12px;
         background-attachment:scroll;
     }
-
     .success-card{
         width:100%;
         max-width:100%;
         padding:35px 22px;
         border-radius:24px;
     }
-
 }
-
 </style>
 
 <div class="success-page">
-
     <div class="success-card">
-
         <div class="success-icon">
             <i class="fa fa-check"></i>
         </div>
@@ -280,24 +257,69 @@ html,body{
             We wish you a wonderful journey ahead.
         </p>
 
-       
-           
+        {% if booking %}
+        <div class="booking-info">
+            <h5><i class="fa fa-ticket me-2"></i> Booking Details</h5>
+            
+            <div class="info-row">
+                <span>Booking ID:</span>
+                <span>#{{ booking.id }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span>Booking Type:</span>
+                <span>{% if booking.package %}Tour Package{% else %}Hotel Booking{% endif %}</span>
+            </div>
+            
+            <div class="info-row">
+                <span>{% if booking.package %}Package Name:{% else %}Hotel Name:{% endif %}</span>
+                <span>{% if booking.package %}{{ booking.package.package_name }}{% else %}{{ booking.hotel.hotel_name }}{% endif %}</span>
+            </div>
+            
+            <div class="info-row">
+                <span>Check In:</span>
+                <span>{{ booking.check_in }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span>Check Out:</span>
+                <span>{{ booking.check_out }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span>Guests:</span>
+                <span>{{ booking.guests }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span>Payment Method:</span>
+                <span>{{ booking.payment_method|title }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span>Total Amount:</span>
+                <span>₹{{ booking.total_price }}</span>
+            </div>
+        </div>
+        {% endif %}
+        
         <div class="action-buttons">
-
             <a href="/" class="success-btn home-btn">
                 <i class="fa fa-home me-2"></i>
                 Back To Home
             </a>
-
             <a href="{% url 'my_bookings' %}" class="success-btn booking-btn">
                 <i class="fa fa-suitcase me-2"></i>
                 My Bookings
             </a>
-
+            {% if booking %}
+            <a href="{% url 'download_booking_bill' booking.id %}" class="success-btn download-btn no-loader">
+                <i class="fa fa-file-pdf me-2"></i>
+                Download Bill
+            </a>
+            {% endif %}
         </div>
-
     </div>
-
 </div>
 
 {% endblock %}
