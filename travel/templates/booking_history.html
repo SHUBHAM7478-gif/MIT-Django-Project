@@ -6,7 +6,17 @@
 {% load static %}
 
 <div class="container py-5">
-    
+    {% if messages %}
+        <div class="messages-container mb-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <!-- Hero Section with Background Pattern -->
     <div class="booking-hero-section mb-5 fade-in-up">
         <div class="row align-items-center">
@@ -184,15 +194,17 @@
                      data-name="{% if b.package %}{{ b.package.package_name|lower }}{% else %}{{ b.hotel.hotel_name|lower }}{% endif %}"
                      data-price="{{ b.total_price }}"
                      data-date="{{ b.check_in|date:'Y-m-d' }}"
-                     data-status="
-                        {% if check_out < today %}
+                    data-status="
+                        {% if b.payment_status == 'cancelled' %}
+                            cancelled
+                        {% elif check_out < today %}
                             completed
                         {% elif check_in <= today and check_out >= today %}
                             active
                         {% else %}
                             upcoming
                         {% endif %}
-                    ">
+                    "
                     
                     <div class="booking-card-modern" id="booking-card-{{ b.id }}">
                         <div class="row g-0">
@@ -233,40 +245,32 @@
                             <!-- Middle Section - Details -->
                             <div class="col-md-6 col-lg-7 booking-details">
                                 <!-- Status Badge - Updated Logic -->
-                                   <div class="booking-status-wrapper mb-2">
-                                        {% if check_out < today %}
-                                            <span class="status-badge status-completed">
-                                                <i class="fas fa-check-double me-1"></i>Completed
-                                            </span>
+                                <div class="booking-status-wrapper mb-2">
 
-                                        {% elif check_in <= today and check_out >= today %}
-                                            <span class="status-badge status-active">
-                                                <i class="fas fa-play-circle me-1"></i>Active
-                                            </span>
+                                    {% if b.payment_status == 'cancelled' %}
+                                        <span class="status-badge status-cancel">
+                                            <i class="fas fa-times-circle me-1"></i>Cancelled
+                                        </span>
 
-                                        {% else %}
-                                            <span class="status-badge status-upcoming">
-                                                <i class="fas fa-clock me-1"></i>Upcoming
-                                            </span>
-                                        {% endif %}
-                                    </div>
-                                
-                                <div class="booking-header">
-                                    <h3 class="booking-title">
-                                        {% if b.package %}
-                                            {{ b.package.package_name }}
-                                        {% else %}
-                                            {{ b.hotel.hotel_name }}
-                                        {% endif %}
-                                    </h3>
-                                    {% if b.package and b.package.hotel_name %}
-                                        <p class="booking-subtitle">
-                                            <i class="fas fa-hotel me-1 text-muted"></i>
-                                            {{ b.package.hotel_name.hotel_name }}
-                                        </p>
+                                    {% elif check_out < today %}
+                                        <span class="status-badge status-completed">
+                                            <i class="fas fa-check-double me-1"></i>Completed
+                                        </span>
+
+                                    {% elif check_in <= today and check_out >= today %}
+                                        <span class="status-badge status-active">
+                                            <i class="fas fa-play-circle me-1"></i>Active
+                                        </span>
+
+                                    {% else %}
+                                        <span class="status-badge status-upcoming">
+                                            <i class="fas fa-clock me-1"></i>Upcoming
+                                        </span>
+
                                     {% endif %}
+
                                 </div>
-                                
+                                                                
                                 <div class="booking-info-grid">
                                     <div class="info-item">
                                         <i class="fas fa-calendar-check info-icon"></i>
@@ -347,12 +351,30 @@
                                         <span>Print Bill</span>
 
                                     </a>
-                                    <a href="/my-bookings/delete/{{ b.id }}" 
-                                       class="btn-action btn-cancel"
-                                       onclick="return confirm('Are you sure you want to cancel this booking? This action cannot be undone.')">
-                                        <i class="fas fa-trash-alt"></i>
-                                        <span>Cancel</span>
-                                    </a>
+                                    {% if b.payment_status == 'cancelled' %}
+
+                                        <a href="{% url 'delete_booking' b.id %}" 
+                                        class="btn-action btn-cancel"
+                                        onclick="return confirm('Delete this cancelled booking permanently?');">
+
+                                            <i class="fas fa-trash-alt"></i>
+                                            <span>Delete</span>
+
+                                        </a>
+
+                                    {% endif %}
+                                    {% if b.payment_status != 'cancelled' %}
+
+                                        <a href="{% url 'delete' b.id %}" 
+                                        class="btn-action btn-cancel"
+                                        onclick="return confirm('Cancel this booking?');">
+
+                                            <i class="fas fa-times-circle"></i>
+                                            <span>Cancel Booking</span>
+
+                                        </a>
+
+                                    {% endif %}
                                 </div>
                                 
                                 <div class="support-link mt-2">
@@ -401,7 +423,7 @@
                 <h3 class="fw-bold mt-4 mb-3">No Bookings Yet!</h3>
                 <p class="text-muted mb-4">Ready to explore the world? Book your first adventure with us today.</p>
                 <div class="empty-state-actions">
-                    <a href="{% url 'travels' %}" class="btn btn-primary btn-lg px-5 me-3">
+                    <a href="{% url 'package' %}" class="btn btn-primary btn-lg px-5 me-3">
                         <i class="fas fa-search me-2"></i>Explore Packages
                     </a>
                     <a href="{% url 'hotel' %}" class="btn btn-outline-primary btn-lg px-5">
@@ -601,7 +623,11 @@
     font-size: 0.75rem;
     font-weight: 600;
 }
-
+.status-cancel{
+    background:#ffebee;
+    color:#d32f2f;
+    border:1px solid #ef9a9a;
+}
 .status-completed {
     background: var(--completed-bg);
     color: white;

@@ -144,29 +144,39 @@ textarea.hotel-input{
     .hotel-form-body{
         padding:26px;
     }
-
     .hotel-card-top h2{
         font-size:32px;
     }
 }
+
 select.premium-input{
     cursor:pointer;
     background:#fff url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%238c99aa' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 15px center;
-    appearance:none;}
+    appearance:none;
+}
 </style>
 
 <section class="hotel-book-page">
 
     <div class="hotel-book-card">
-
         <div class="hotel-card-top">
+            {% if messages %}
+                <div class="messages-container mb-4">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <span>Luxury Hotel Booking</span>
             <h2>Hotel Booking</h2>
             <p>Book your comfortable stay with a smooth premium experience.</p>
         </div>
 
         <div class="hotel-form-body">
-
             <form method="POST">
                 {% csrf_token %}
 
@@ -181,6 +191,7 @@ select.premium-input{
                            class="form-control hotel-input"
                            name="h_name"
                            placeholder="Enter your full name"
+                           value="{{ initial.h_name|default:'' }}"
                            required>
                 </div>
 
@@ -190,6 +201,7 @@ select.premium-input{
                            class="form-control hotel-input"
                            name="h_email"
                            placeholder="Enter your email"
+                           value="{{ initial.h_email|default:'' }}"
                            required>
                 </div>
 
@@ -199,7 +211,7 @@ select.premium-input{
                               rows="3"
                               name="Address"
                               placeholder="Enter your address"
-                              required></textarea>
+                              required>{{ initial.Address|default:'' }}</textarea>
                 </div>
 
                 <div class="booking-divider"></div>
@@ -214,14 +226,16 @@ select.premium-input{
                         <label class="form-label">Check In</label>
                         <input type="date"
                                class="form-control hotel-input"
-                               name="check_in">
+                               name="check_in"
+                               required>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Check Out</label>
                         <input type="date"
                                class="form-control hotel-input"
-                               name="check_out">
+                               name="check_out"
+                               required>
                     </div>
                 </div>
 
@@ -230,12 +244,12 @@ select.premium-input{
                     <input type="number"
                            class="form-control hotel-input"
                            name="guests"
-                           placeholder="Enter number of guests">
+                           placeholder="Enter number of guests"
+                           value="1"
+                           min="1"
+                           required>
                 </div>
 
-                <div class="hotel-note">
-                    <strong>Note:</strong> Your hotel booking will be saved and shown inside My Bookings after confirmation.
-                </div>
                 <!-- PAYMENT SECTION -->
                 <div class="booking-divider">
                     <span>💳</span>
@@ -249,33 +263,24 @@ select.premium-input{
                 </h5>
 
                 <div class="mb-4">
-
                     <label class="form-label">Select Payment Method</label>
-
                     <select name="payment_method" class="form-control premium-input" required>
                         <option value="">-- Choose Payment Method --</option>
-
-                        <option value="online">
-                            Online Payment (Razorpay)
-                        </option>
-
-                        <option value="cash">
-                            Cash on Arrival
-                        </option>
-
+                        <option value="online" selected>Online Payment (Razorpay)</option>
+                        <option value="cash">Cash on Arrival</option>
                     </select>
-
                 </div>
+
+                <div class="hotel-note">
+                    <strong>Note:</strong> Your hotel booking will be saved and shown inside My Bookings after confirmation.
+                </div>
+
                 <button class="btn confirm-hotel-btn" type="submit">
                     Confirm Hotel Booking
                 </button>
-
             </form>
-
         </div>
-
     </div>
-
 </section>
 
 {% endblock %}
